@@ -1,14 +1,13 @@
-﻿job=115436534345
-  Set up job: success
-  Checkout: success
-  Set up Python: success
-  Build feed (拉取 ipk+apk + 生成 Packages / Packages.gz): success
-  Generate apk v3 index (packages.adb) via apk mkndx: failure
-  Verify apk v3 feed (packages.adb must contain all 5 apk): skipped
-  Install rclone: skipped
-  Configure rclone R2 remote (临时，仅本 job 有效): skipped
-  Sync dist -> R2 bucket 的 opkg/ 目录: skipped
-  Build summary: success
-  Post Set up Python: skipped
-  Post Checkout: success
-  Complete job: success
+﻿Set up job: success
+Checkout: success
+Set up Python: success
+Build feed (拉取 ipk+apk + 生成 Packages / Packages.gz): success
+Generate apk v3 index (packages.adb) via apk mkndx: success
+Verify apk v3 feed (packages.adb must contain 4 v3 apk): failure
+Install rclone: skipped
+Configure rclone R2 remote (临时，仅本 job 有效): skipped
+Sync dist -> R2 bucket 的 opkg/ 目录: skipped
+Build summary: success
+Post Set up Python: skipped
+Post Checkout: success
+Complete job: success

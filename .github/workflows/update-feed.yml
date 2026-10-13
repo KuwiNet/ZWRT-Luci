@@ -65,24 +65,29 @@ jobs:
             exit $failed
           '
 
-      # 端到端验证：用 apk adbdump 检查 v3 索引必须包含全部 4 个 v3 apk（afrp 的 apk 是 v2，
-      # 与 apk-tools v3 不兼容，只走 ipk/opkg 源），否则视为失败（不同步坏源）
-      - name: Verify apk v3 feed (packages.adb must contain 4 v3 apk)
+      # 端到端验证：真正用 apk 从这个源安装 4 个 v3 包（--no-deps 跳过依赖，
+      # --allow-untrusted 允许未签名仓库）。apk 会校验索引里的校验和，错则拒绝。
+      # afrp 的 apk 是 v2，与 apk-tools v3 不兼容，只走 ipk/opkg 源。
+      - name: Verify apk v3 feed (install 4 v3 packages from repo)
         run: |
           docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
-            echo "== apk v3 feed verification =="
+            echo "== apk v3 feed end-to-end verify (apk add) =="
             ok=1
             for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
               echo "===== $d ====="
               test -f /dist/$d/packages.adb || { echo "NO packages.adb in $d"; ok=0; continue; }
-              echo "--- index contains (adbdump P: lines) ---"
-              apk adbdump /dist/$d/packages.adb 2>&1 | grep -E "^[[:space:]]*P:" | head -20
+              echo "--- packages.adb adbdump (first 25 lines) ---"
+              apk adbdump /dist/$d/packages.adb 2>&1 | head -25
+              echo "--- apk add each v3 package from this repo (checksum verified by apk) ---"
               for p in luci-app-5gmodem luci-theme-zwrt luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw; do
-                if apk adbdump /dist/$d/packages.adb 2>&1 | grep -qE "^[[:space:]]*P:[[:space:]]*$p(\$|[[:space:]])"; then echo "HAS $p"; else echo "MISSING $p  <<<"; ok=0; fi
-              done
-              echo "--- verify each package integrity ---"
-              for f in /dist/$d/*.apk; do
-                apk verify --allow-untrusted "$f" >/dev/null 2>&1 && echo "OK  $(basename $f)" || { echo "FAIL $(basename $f)"; ok=0; }
+                rm -rf /tmp/r_$d
+                if apk add --initdb --root /tmp/r_$d --allow-untrusted --repository "file:///dist/$d" --no-deps "$p" >/tmp/apkout 2>&1; then
+                  echo "INSTALLED $p"
+                else
+                  echo "INSTALL FAIL $p <<<"
+                  tail -5 /tmp/apkout
+                  ok=0
+                fi
               done
             done
             [ "$ok" = 1 ] && echo "== APK V3 FEED VERIFIED ==" || { echo "== APK V3 FEED HAS PROBLEMS, ABORT BEFORE SYNC =="; exit 1; }
@@ -103,9 +108,9 @@ jobs:
             acl private \
             env_auth false
 
-      - name: Sync dist -> R2 bucket 的 opkg/ 目录
+      - name: Sync dist -> R2 bucket 的 packages/ 目录
         run: |
-          rclone sync dist "r2:${{ secrets.R2_BUCKET }}/opkg" \
+          rclone sync dist "r2:${{ secrets.R2_BUCKET }}/packages" \
             --fast-list \
             --transfers 8 \
             --checkers 8 \
