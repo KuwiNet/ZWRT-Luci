@@ -227,8 +227,8 @@ def build(config, work_dir, out_dir):
     if not downloaded:
         raise SystemExit("没有任何 ipk 下载成功，停止构建。")
 
-    # 2) 解析并生成 all/Packages 条目
-    entries = {}  # package_name -> text block
+    # 2) 解析每个 ipk，收集 (字段行, 架构, 文件名)；Filename 按目录单独追加
+    entries = {}  # pkg_name -> (lines_without_filename, arch, filename)
     for plugin, filename, abspath in downloaded:
         fields, _ = extract_control(abspath)
         pkg_name = dict(fields).get("Package")
@@ -241,44 +241,55 @@ def build(config, work_dir, out_dir):
         if inst is None:
             inst = str(compute_installed_size(abspath))
         lines = [f"{k}: {v}" for k, v in fields]
-        lines.append(f"Filename: {'all' if arch == 'all' else arch}/{filename}")
         lines.append(f"Size: {size}")
         lines.append(f"MD5Sum: {md5_file(abspath)}")
         lines.append(f"SHA256sum: {sha256_file(abspath)}")
         lines.append(f"Installed-Size: {inst}")
-        entries[pkg_name] = "\n".join(lines)
+        entries[pkg_name] = (lines, arch, filename)
 
-    # 3) 把 all 架构的 ipk 复制进 out/all/
-    all_ipks = set()
-    for plugin, filename, abspath in downloaded:
-        fields, _ = extract_control(abspath)
-        arch = dict(fields).get("Architecture", "all")
-        if arch == "all":
-            shutil.copy2(abspath, os.path.join(all_dir, filename))
-            all_ipks.add(filename)
-    # 清理 out/all/ 中本次未生成的旧 ipk（保持源与本地一致）
-    for old in os.listdir(all_dir):
-        if old not in all_ipks and old.endswith(".ipk"):
-            os.remove(os.path.join(all_dir, old))
-
-    # 4) 写 all/Packages 及各架构 Packages
     order = sorted(entries)
-    arch_all = [entries[p] for p in order]
-    write_index(os.path.join(all_dir, "Packages"), arch_all)
 
+    def blocks_for(arch):
+        """给定架构的索引块：all 包 + 本架构专用包，Filename 用纯文件名。"""
+        out = []
+        for pkg in order:
+            lines, parch, filename = entries[pkg]
+            if parch == "all" or parch == arch:
+                out.append("\n".join(lines + [f"Filename: {filename}"]))
+        return out
+
+    def mirror_into(dir_path, keep):
+        """把 ipk 复制进 dir_path，并清理该目录内本次未生成的过期 ipk。"""
+        os.makedirs(dir_path, exist_ok=True)
+        keep = set(keep)
+        for old in os.listdir(dir_path):
+            if old.endswith(".ipk") and old not in keep:
+                os.remove(os.path.join(dir_path, old))
+
+    # 3) all/ 目录：存放全部 all 架构 ipk（供 all 源使用）
+    all_ipks = []
+    for pkg in order:
+        lines, parch, filename = entries[pkg]
+        if parch == "all":
+            shutil.copy2(os.path.join(work_dir, filename), os.path.join(all_dir, filename))
+            all_ipks.append(filename)
+    mirror_into(all_dir, all_ipks)
+    write_index(os.path.join(all_dir, "Packages"), blocks_for("all"))
+
+    # 4) 每个目标架构目录：镜像 all 架构 ipk + 本架构专用 ipk，并写索引
     for arch in config.get("architectures", []):
         if arch == "all":
             continue
         arch_dir = os.path.join(out_dir, arch)
         os.makedirs(arch_dir, exist_ok=True)
-        # 架构索引 = 所有 all 包（Filename 已指向 all/）+ 本架构的包
-        blocks = list(arch_all)
-        for p in order:
-            fields = entries[p]
-            if f"\nArchitecture: {arch}\n" in "\n" + fields:
-                # 该包是本架构专用（Filename 已指向 <arch>/）
-                blocks.append(fields)
-        write_index(os.path.join(arch_dir, "Packages"), blocks)
+        arch_ipks = []
+        for pkg in order:
+            lines, parch, filename = entries[pkg]
+            if parch == "all" or parch == arch:
+                shutil.copy2(os.path.join(work_dir, filename), os.path.join(arch_dir, filename))
+                arch_ipks.append(filename)
+        mirror_into(arch_dir, arch_ipks)
+        write_index(os.path.join(arch_dir, "Packages"), blocks_for(arch))
 
     print(f"构建完成：共 {len(entries)} 个包，all/ + {len(config.get('architectures',[]))-1} 个架构索引已生成于 {out_dir}")
     return entries
