@@ -1,323 +1,323 @@
-﻿2026-10-13T17:14:17.6242766Z Current runner version: '2.337.0'
-2026-10-13T17:14:17.6267864Z ##[group]Runner Image Provisioner
-2026-10-13T17:14:17.6268733Z Hosted Compute Agent
-2026-10-13T17:14:17.6269515Z Version: 20261002.596
-2026-10-13T17:14:17.6270539Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
-2026-10-13T17:14:17.6271407Z Build Date: 2026-10-02T22:28:27Z
-2026-10-13T17:14:17.6272201Z Worker ID: {da77d687-f165-4ab2-8b12-0ec73ffa37c4}
-2026-10-13T17:14:17.6273020Z Region: eastus2
-2026-10-13T17:14:17.6273682Z Cloud: Azure
-2026-10-13T17:14:17.6274315Z ##[endgroup]
-2026-10-13T17:14:17.6275906Z ##[group]Operating System
-2026-10-13T17:14:17.6276600Z Ubuntu
-2026-10-13T17:14:17.6277286Z 24.04.5
-2026-10-13T17:14:17.6277878Z LTS
-2026-10-13T17:14:17.6278425Z ##[endgroup]
-2026-10-13T17:14:17.6279130Z ##[group]Runner Image
-2026-10-13T17:14:17.6279993Z Image: ubuntu-24.04
-2026-10-13T17:14:17.6280676Z Version: 20261004.327.1
-2026-10-13T17:14:17.6282070Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
-2026-10-13T17:14:17.6284673Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
-2026-10-13T17:14:17.6285782Z ##[endgroup]
-2026-10-13T17:14:17.6286987Z ##[group]GITHUB_TOKEN Permissions
-2026-10-13T17:14:17.6289249Z Contents: read
-2026-10-13T17:14:17.6290202Z Metadata: read
-2026-10-13T17:14:17.6290792Z ##[endgroup]
-2026-10-13T17:14:17.6292994Z Secret source: Actions
-2026-10-13T17:14:17.6294025Z Cache mode: write
-2026-10-13T17:14:17.6295216Z Prepare workflow directory
-2026-10-13T17:14:17.6833557Z Prepare all required actions
-2026-10-13T17:14:17.6883914Z Getting action download info
-2026-10-13T17:14:17.9066791Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
-2026-10-13T17:14:18.0005925Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
-2026-10-13T17:14:18.1724898Z Complete job name: build-and-sync
-2026-10-13T17:14:18.2459094Z ##[group]Run actions/checkout@v4
-2026-10-13T17:14:18.2460293Z with:
-2026-10-13T17:14:18.2460793Z   repository: KuwiNet/ZWRT-opkg
-2026-10-13T17:14:18.2464742Z   token: ***
-2026-10-13T17:14:18.2465214Z   ssh-strict: true
-2026-10-13T17:14:18.2465680Z   ssh-user: git
-2026-10-13T17:14:18.2466160Z   persist-credentials: true
-2026-10-13T17:14:18.2466705Z   clean: true
-2026-10-13T17:14:18.2467188Z   sparse-checkout-cone-mode: true
-2026-10-13T17:14:18.2467750Z   fetch-depth: 1
-2026-10-13T17:14:18.2468221Z   fetch-tags: false
-2026-10-13T17:14:18.2468699Z   show-progress: true
-2026-10-13T17:14:18.2469178Z   lfs: false
-2026-10-13T17:14:18.2469986Z   submodules: false
-2026-10-13T17:14:18.2470609Z   set-safe-directory: true
-2026-10-13T17:14:18.2471167Z   allow-unsafe-pr-checkout: false
-2026-10-13T17:14:18.2472052Z env:
-2026-10-13T17:14:18.2472875Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
-2026-10-13T17:14:18.2473550Z ##[endgroup]
-2026-10-13T17:14:18.3533346Z Syncing repository: KuwiNet/ZWRT-opkg
-2026-10-13T17:14:18.3535248Z ##[group]Getting Git version info
-2026-10-13T17:14:18.3536056Z Working directory is '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
-2026-10-13T17:14:18.3537153Z [command]/usr/bin/git version
-2026-10-13T17:14:18.3615115Z git version 2.55.0
-2026-10-13T17:14:18.3667271Z ##[endgroup]
-2026-10-13T17:14:18.3684763Z Temporarily overriding HOME='/home/runner/work/_temp/e503ffb0-9af6-4254-9716-d11f0b686568' before making global git config changes
-2026-10-13T17:14:18.3687761Z Adding repository directory to the temporary git global config as a safe directory
-2026-10-13T17:14:18.3691864Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
-2026-10-13T17:14:18.3746350Z Deleting the contents of '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
-2026-10-13T17:14:18.3751155Z ##[group]Initializing the repository
-2026-10-13T17:14:18.3756868Z [command]/usr/bin/git init /home/runner/work/ZWRT-opkg/ZWRT-opkg
-2026-10-13T17:14:18.3872163Z hint: Using 'master' as the name for the initial branch. This default branch name
-2026-10-13T17:14:18.3874436Z hint: will change to "main" in Git 3.0. To configure the initial branch name
-2026-10-13T17:14:18.3877162Z hint: to use in all of your new repositories, which will suppress this warning,
-2026-10-13T17:14:18.3878650Z hint: call:
-2026-10-13T17:14:18.3879810Z hint:
-2026-10-13T17:14:18.3881054Z hint: 	git config --global init.defaultBranch <name>
-2026-10-13T17:14:18.3882332Z hint:
-2026-10-13T17:14:18.3883546Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
-2026-10-13T17:14:18.3885378Z hint: 'development'. The just-created branch can be renamed via this command:
-2026-10-13T17:14:18.3886915Z hint:
-2026-10-13T17:14:18.3888126Z hint: 	git branch -m <name>
-2026-10-13T17:14:18.3889393Z hint:
-2026-10-13T17:14:18.3890976Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2026-10-13T17:14:18.3893030Z Initialized empty Git repository in /home/runner/work/ZWRT-opkg/ZWRT-opkg/.git/
-2026-10-13T17:14:18.3897000Z [command]/usr/bin/git remote add origin https://github.com/KuwiNet/ZWRT-opkg
-2026-10-13T17:14:18.3947941Z ##[endgroup]
-2026-10-13T17:14:18.3949490Z ##[group]Disabling automatic garbage collection
-2026-10-13T17:14:18.3952007Z [command]/usr/bin/git config --local gc.auto 0
-2026-10-13T17:14:18.3987606Z ##[endgroup]
-2026-10-13T17:14:18.3989336Z ##[group]Setting up auth
-2026-10-13T17:14:18.3995497Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-10-13T17:14:18.4040072Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-10-13T17:14:18.4400558Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-10-13T17:14:18.4437181Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-10-13T17:14:18.4664865Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-10-13T17:14:18.4700799Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-10-13T17:14:18.4923267Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2026-10-13T17:14:18.4964517Z ##[endgroup]
-2026-10-13T17:14:18.4965396Z ##[group]Fetching the repository
-2026-10-13T17:14:18.4974285Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6b0cce23f306a86940b50eb3f54ca6cca05529d9:refs/remotes/origin/main
-2026-10-13T17:14:18.7331161Z From https://github.com/KuwiNet/ZWRT-opkg
-2026-10-13T17:14:18.7332925Z  * [new ref]         6b0cce23f306a86940b50eb3f54ca6cca05529d9 -> origin/main
-2026-10-13T17:14:18.7336914Z ##[endgroup]
-2026-10-13T17:14:18.7338708Z ##[group]Determining the checkout info
-2026-10-13T17:14:18.7340873Z ##[endgroup]
-2026-10-13T17:14:18.7343511Z [command]/usr/bin/git sparse-checkout disable
-2026-10-13T17:14:18.7399022Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
-2026-10-13T17:14:18.7434040Z ##[group]Checking out the ref
-2026-10-13T17:14:18.7439373Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
-2026-10-13T17:14:18.7507386Z Switched to a new branch 'main'
-2026-10-13T17:14:18.7513847Z branch 'main' set up to track 'origin/main'.
-2026-10-13T17:14:18.7519060Z ##[endgroup]
-2026-10-13T17:14:18.7561868Z [command]/usr/bin/git log -1 --format=%H
-2026-10-13T17:14:18.7588393Z 6b0cce23f306a86940b50eb3f54ca6cca05529d9
-2026-10-13T17:14:18.7864804Z ##[group]Run actions/setup-python@v5
-2026-10-13T17:14:18.7865458Z with:
-2026-10-13T17:14:18.7865913Z   python-version: 3.12
-2026-10-13T17:14:18.7866455Z   check-latest: false
-2026-10-13T17:14:18.7870587Z   token: ***
-2026-10-13T17:14:18.7871090Z   update-environment: true
-2026-10-13T17:14:18.7871900Z   allow-prereleases: false
-2026-10-13T17:14:18.7872431Z   freethreaded: false
-2026-10-13T17:14:18.7872904Z env:
-2026-10-13T17:14:18.7873617Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
-2026-10-13T17:14:18.7874279Z ##[endgroup]
-2026-10-13T17:14:18.9285194Z ##[group]Installed versions
-2026-10-13T17:14:18.9393411Z (node:2315) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-10-13T17:14:18.9395873Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-10-13T17:14:18.9397278Z Successfully set up CPython (3.12.15)
-2026-10-13T17:14:18.9398841Z ##[endgroup]
-2026-10-13T17:14:18.9605934Z ##[group]Run python scripts/build_feed.py \
-2026-10-13T17:14:18.9607133Z [36;1mpython scripts/build_feed.py \[0m
-2026-10-13T17:14:18.9608119Z [36;1m  --config config/feed.json \[0m
-2026-10-13T17:14:18.9609042Z [36;1m  --out dist \[0m
-2026-10-13T17:14:18.9610405Z [36;1m  --work .work[0m
-2026-10-13T17:14:18.9941487Z shell: /usr/bin/bash -e {0}
-2026-10-13T17:14:18.9942276Z env:
-2026-10-13T17:14:18.9943303Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
-2026-10-13T17:14:18.9944264Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:18.9945323Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
-2026-10-13T17:14:18.9946391Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:18.9947366Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:18.9948305Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:18.9949198Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
-2026-10-13T17:14:18.9954050Z   GH_TOKEN: ***
-2026-10-13T17:14:18.9954550Z ##[endgroup]
-2026-10-13T17:14:22.3505855Z   生成 dist/all/Packages (2982 B) + .gz
-2026-10-13T17:14:22.3506551Z   生成 dist/x86_64/Packages (2982 B) + .gz
-2026-10-13T17:14:22.3507142Z   生成 dist/aarch64_cortex-a53/Packages (2982 B) + .gz
-2026-10-13T17:14:22.3507734Z   生成 dist/arm_cortex-a7/Packages (2982 B) + .gz
-2026-10-13T17:14:22.3508614Z 构建完成：5 个 ipk、5 个 apk，all/ + 3 个架构目录已生成于 dist
-2026-10-13T17:14:22.3661941Z ##[group]Run docker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '
-2026-10-13T17:14:22.3662660Z [36;1mdocker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '[0m
-2026-10-13T17:14:22.3663170Z [36;1m  echo "apk version: $(apk --version)"[0m
-2026-10-13T17:14:22.3663522Z [36;1m  failed=0[0m
-2026-10-13T17:14:22.3663884Z [36;1m  for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do[0m
-2026-10-13T17:14:22.3664290Z [36;1m    echo "===== $d ====="[0m
-2026-10-13T17:14:22.3664708Z [36;1m    ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }[0m
-2026-10-13T17:14:22.3665396Z [36;1m    ( cd /dist/$d && apk index --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )[0m
-2026-10-13T17:14:22.3666191Z [36;1m    if [ -f /dist/$d/APKINDEX.tar.gz ]; then echo "index OK $d"; else echo "INDEX MISSING $d"; failed=1; fi[0m
-2026-10-13T17:14:22.3666806Z [36;1m    echo "--- files in $d ---"[0m
-2026-10-13T17:14:22.3667193Z [36;1m    ls -la /dist/$d[0m
-2026-10-13T17:14:22.3667498Z [36;1m  done[0m
-2026-10-13T17:14:22.3667759Z [36;1m  exit $failed[0m
-2026-10-13T17:14:22.3668226Z [36;1m'[0m
-2026-10-13T17:14:22.3734793Z shell: /usr/bin/bash -e {0}
-2026-10-13T17:14:22.3735142Z env:
-2026-10-13T17:14:22.3735926Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
-2026-10-13T17:14:22.3736415Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:22.3736925Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
-2026-10-13T17:14:22.3737635Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:22.3738145Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:22.3738609Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:22.3739069Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
-2026-10-13T17:14:22.3740177Z ##[endgroup]
-2026-10-13T17:14:22.4721089Z Unable to find image 'alpine:latest' locally
-2026-10-13T17:14:22.7783280Z latest: Pulling from library/alpine
-2026-10-13T17:14:22.8750711Z e2de96513ba9: Already exists
-2026-10-13T17:14:22.9237886Z Digest: sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
-2026-10-13T17:14:22.9251628Z Status: Downloaded newer image for alpine:latest
-2026-10-13T17:14:23.4664541Z apk version: apk-tools 3.0.8-r0, compiled for x86_64.
-2026-10-13T17:14:23.4665651Z ===== all =====
-2026-10-13T17:14:23.4691053Z /dist/all/luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.4711005Z /dist/all/luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.4711797Z /dist/all/luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.4712299Z /dist/all/luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.4712988Z /dist/all/luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5062083Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5064555Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
-2026-10-13T17:14:23.5065445Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5066239Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5067098Z ERROR: ./luci-theme-***-3.5.10-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5067718Z INDEX MISSING all
-2026-10-13T17:14:23.5068021Z --- files in all ---
-2026-10-13T17:14:23.5077184Z total 25524
-2026-10-13T17:14:23.5083782Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:14 .
-2026-10-13T17:14:23.5084667Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:14 ..
-2026-10-13T17:14:23.5085447Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:14 Packages
-2026-10-13T17:14:23.5086324Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:14 Packages.gz
-2026-10-13T17:14:23.5087286Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:14 luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5088283Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:14 luci-app-5gmodem_3.4.0-r1_all.ipk
-2026-10-13T17:14:23.5090231Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:14 luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5091287Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:14 luci-app-afrp_1.1.8_all.ipk
-2026-10-13T17:14:23.5092224Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5093147Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.ipk
-2026-10-13T17:14:23.5094088Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5095102Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.ipk
-2026-10-13T17:14:23.5096196Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:14 luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5096769Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:14 luci-theme-***_3.5.10_all.ipk
-2026-10-13T17:14:23.5098447Z ===== aarch64_cortex-a53 =====
-2026-10-13T17:14:23.5099090Z /dist/aarch64_cortex-a53/luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5099905Z /dist/aarch64_cortex-a53/luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5100425Z /dist/aarch64_cortex-a53/luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5100819Z /dist/aarch64_cortex-a53/luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5101257Z /dist/aarch64_cortex-a53/luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5192598Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5193541Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
-2026-10-13T17:14:23.5194044Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5194479Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5194960Z ERROR: ./luci-theme-***-3.5.10-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5195346Z INDEX MISSING aarch64_cortex-a53
-2026-10-13T17:14:23.5195640Z --- files in aarch64_cortex-a53 ---
-2026-10-13T17:14:23.5197694Z total 25524
-2026-10-13T17:14:23.5201501Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:14 .
-2026-10-13T17:14:23.5202860Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:14 ..
-2026-10-13T17:14:23.5203858Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:14 Packages
-2026-10-13T17:14:23.5204806Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:14 Packages.gz
-2026-10-13T17:14:23.5205829Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:14 luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5207010Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:14 luci-app-5gmodem_3.4.0-r1_all.ipk
-2026-10-13T17:14:23.5208341Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:14 luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5209349Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:14 luci-app-afrp_1.1.8_all.ipk
-2026-10-13T17:14:23.5210655Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5211617Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.ipk
-2026-10-13T17:14:23.5212767Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5214189Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.ipk
-2026-10-13T17:14:23.5215486Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:14 luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5216526Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:14 luci-theme-***_3.5.10_all.ipk
-2026-10-13T17:14:23.5217470Z ===== x86_64 =====
-2026-10-13T17:14:23.5217985Z /dist/x86_64/luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5218572Z /dist/x86_64/luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5219123Z /dist/x86_64/luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5219965Z /dist/x86_64/luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5220611Z /dist/x86_64/luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5305169Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5306299Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
-2026-10-13T17:14:23.5307406Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5308717Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5310040Z ERROR: ./luci-theme-***-3.5.10-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5311042Z INDEX MISSING x86_64
-2026-10-13T17:14:23.5311704Z --- files in x86_64 ---
-2026-10-13T17:14:23.5314530Z total 25524
-2026-10-13T17:14:23.5316817Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:14 .
-2026-10-13T17:14:23.5318521Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:14 ..
-2026-10-13T17:14:23.5319182Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:14 Packages
-2026-10-13T17:14:23.5319942Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:14 Packages.gz
-2026-10-13T17:14:23.5320868Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:14 luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5321449Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:14 luci-app-5gmodem_3.4.0-r1_all.ipk
-2026-10-13T17:14:23.5322042Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:14 luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5322580Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:14 luci-app-afrp_1.1.8_all.ipk
-2026-10-13T17:14:23.5323629Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5324992Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.ipk
-2026-10-13T17:14:23.5325969Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5326530Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.ipk
-2026-10-13T17:14:23.5327128Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:14 luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5327918Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:14 luci-theme-***_3.5.10_all.ipk
-2026-10-13T17:14:23.5328683Z ===== arm_cortex-a7 =====
-2026-10-13T17:14:23.5329282Z /dist/arm_cortex-a7/luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5330546Z /dist/arm_cortex-a7/luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5331255Z /dist/arm_cortex-a7/luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5331918Z /dist/arm_cortex-a7/luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5332453Z /dist/arm_cortex-a7/luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5419378Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5420917Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
-2026-10-13T17:14:23.5421947Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5423045Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5423671Z ERROR: ./luci-theme-***-3.5.10-r1.apk: UNTRUSTED signature
-2026-10-13T17:14:23.5424076Z INDEX MISSING arm_cortex-a7
-2026-10-13T17:14:23.5424374Z --- files in arm_cortex-a7 ---
-2026-10-13T17:14:23.5428534Z total 25524
-2026-10-13T17:14:23.5432030Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:14 .
-2026-10-13T17:14:23.5432642Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:14 ..
-2026-10-13T17:14:23.5433089Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:14 Packages
-2026-10-13T17:14:23.5433772Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:14 Packages.gz
-2026-10-13T17:14:23.5434620Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:14 luci-app-5gmodem-3.4.0-r1.apk
-2026-10-13T17:14:23.5435585Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:14 luci-app-5gmodem_3.4.0-r1_all.ipk
-2026-10-13T17:14:23.5436549Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:14 luci-app-afrp-1.1.8-r1.apk
-2026-10-13T17:14:23.5437463Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:14 luci-app-afrp_1.1.8_all.ipk
-2026-10-13T17:14:23.5438340Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.apk
-2026-10-13T17:14:23.5438985Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:14 luci-i18n-5gmodem-zh-cn.ipk
-2026-10-13T17:14:23.5440074Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.apk
-2026-10-13T17:14:23.5441273Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:14 luci-i18n-5gmodem-zh-tw.ipk
-2026-10-13T17:14:23.5442185Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:14 luci-theme-***-3.5.10-r1.apk
-2026-10-13T17:14:23.5442743Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:14 luci-theme-***_3.5.10_all.ipk
-2026-10-13T17:14:23.6680492Z ##[error]Process completed with exit code 1.
-2026-10-13T17:14:23.6754247Z ##[group]Run echo "## Feed build result" >> $GITHUB_STEP_SUMMARY
-2026-10-13T17:14:23.6754733Z [36;1mecho "## Feed build result" >> $GITHUB_STEP_SUMMARY[0m
-2026-10-13T17:14:23.6755102Z [36;1mecho "- 包数：$(python - <<'PY'[0m
-2026-10-13T17:14:23.6755388Z [36;1mimport glob[0m
-2026-10-13T17:14:23.6755652Z [36;1mn = len(glob.glob('dist/all/*.ipk'))[0m
-2026-10-13T17:14:23.6755966Z [36;1mprint(n)[0m
-2026-10-13T17:14:23.6756180Z [36;1mPY[0m
-2026-10-13T17:14:23.6756394Z [36;1m)" >> $GITHUB_STEP_SUMMARY[0m
-2026-10-13T17:14:23.6756772Z [36;1mecho "- 架构索引：$(ls dist | tr '\n' ' ')" >> $GITHUB_STEP_SUMMARY[0m
-2026-10-13T17:14:23.6822852Z shell: /usr/bin/bash -e {0}
-2026-10-13T17:14:23.6823138Z env:
-2026-10-13T17:14:23.6823609Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
-2026-10-13T17:14:23.6824044Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:23.6824501Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
-2026-10-13T17:14:23.6825009Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:23.6825419Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:23.6825834Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
-2026-10-13T17:14:23.6826238Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
-2026-10-13T17:14:23.6826597Z ##[endgroup]
-2026-10-13T17:14:23.7267797Z Post job cleanup.
-2026-10-13T17:14:23.8117007Z [command]/usr/bin/git version
-2026-10-13T17:14:23.8161743Z git version 2.55.0
-2026-10-13T17:14:23.8206252Z Temporarily overriding HOME='/home/runner/work/_temp/27479e75-b5f1-48f6-9c64-eb3e01f1d470' before making global git config changes
-2026-10-13T17:14:23.8207301Z Adding repository directory to the temporary git global config as a safe directory
-2026-10-13T17:14:23.8211696Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
-2026-10-13T17:14:23.8252434Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-10-13T17:14:23.8289280Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-10-13T17:14:23.8545664Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-10-13T17:14:23.8572713Z http.https://github.com/.extraheader
-2026-10-13T17:14:23.8586818Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-10-13T17:14:23.8623165Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-10-13T17:14:23.8894285Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-10-13T17:14:23.8936092Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-10-13T17:14:23.9331243Z Cleaning up orphan processes
-2026-10-13T17:14:23.9706825Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+﻿2026-10-13T17:17:06.0140094Z Current runner version: '2.337.0'
+2026-10-13T17:17:06.0162660Z ##[group]Runner Image Provisioner
+2026-10-13T17:17:06.0163514Z Hosted Compute Agent
+2026-10-13T17:17:06.0164199Z Version: 20261002.596
+2026-10-13T17:17:06.0164831Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-13T17:17:06.0165579Z Build Date: 2026-10-02T22:28:27Z
+2026-10-13T17:17:06.0166319Z Worker ID: {37e6ffeb-85dd-464c-add3-a72068a83146}
+2026-10-13T17:17:06.0167023Z Region: westcentralus
+2026-10-13T17:17:06.0167611Z Cloud: Azure
+2026-10-13T17:17:06.0168172Z ##[endgroup]
+2026-10-13T17:17:06.0169532Z ##[group]Operating System
+2026-10-13T17:17:06.0170261Z Ubuntu
+2026-10-13T17:17:06.0170979Z 24.04.5
+2026-10-13T17:17:06.0171513Z LTS
+2026-10-13T17:17:06.0172068Z ##[endgroup]
+2026-10-13T17:17:06.0172654Z ##[group]Runner Image
+2026-10-13T17:17:06.0173261Z Image: ubuntu-24.04
+2026-10-13T17:17:06.0173870Z Version: 20261004.327.1
+2026-10-13T17:17:06.0175073Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-13T17:17:06.0176559Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-13T17:17:06.0177801Z ##[endgroup]
+2026-10-13T17:17:06.0178946Z ##[group]GITHUB_TOKEN Permissions
+2026-10-13T17:17:06.0181294Z Contents: read
+2026-10-13T17:17:06.0181905Z Metadata: read
+2026-10-13T17:17:06.0182466Z ##[endgroup]
+2026-10-13T17:17:06.0184405Z Secret source: Actions
+2026-10-13T17:17:06.0185286Z Cache mode: write
+2026-10-13T17:17:06.0186234Z Prepare workflow directory
+2026-10-13T17:17:06.0708739Z Prepare all required actions
+2026-10-13T17:17:06.0756076Z Getting action download info
+2026-10-13T17:17:06.3587120Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-13T17:17:06.4743509Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-13T17:17:06.6714534Z Complete job name: build-and-sync
+2026-10-13T17:17:06.7332491Z ##[group]Run actions/checkout@v4
+2026-10-13T17:17:06.7333420Z with:
+2026-10-13T17:17:06.7333936Z   repository: KuwiNet/ZWRT-opkg
+2026-10-13T17:17:06.7337551Z   token: ***
+2026-10-13T17:17:06.7338066Z   ssh-strict: true
+2026-10-13T17:17:06.7338618Z   ssh-user: git
+2026-10-13T17:17:06.7339143Z   persist-credentials: true
+2026-10-13T17:17:06.7339690Z   clean: true
+2026-10-13T17:17:06.7340259Z   sparse-checkout-cone-mode: true
+2026-10-13T17:17:06.7341118Z   fetch-depth: 1
+2026-10-13T17:17:06.7341652Z   fetch-tags: false
+2026-10-13T17:17:06.7342220Z   show-progress: true
+2026-10-13T17:17:06.7342719Z   lfs: false
+2026-10-13T17:17:06.7343230Z   submodules: false
+2026-10-13T17:17:06.7343801Z   set-safe-directory: true
+2026-10-13T17:17:06.7344385Z   allow-unsafe-pr-checkout: false
+2026-10-13T17:17:06.7345125Z env:
+2026-10-13T17:17:06.7345930Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:17:06.7346628Z ##[endgroup]
+2026-10-13T17:17:06.8305263Z Syncing repository: KuwiNet/ZWRT-opkg
+2026-10-13T17:17:06.8307962Z ##[group]Getting Git version info
+2026-10-13T17:17:06.8309167Z Working directory is '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
+2026-10-13T17:17:06.8311173Z [command]/usr/bin/git version
+2026-10-13T17:17:06.8408699Z git version 2.55.0
+2026-10-13T17:17:06.8429610Z ##[endgroup]
+2026-10-13T17:17:06.8440783Z Temporarily overriding HOME='/home/runner/work/_temp/ebc49bd5-0c0d-48be-a974-ddcbb247939f' before making global git config changes
+2026-10-13T17:17:06.8442809Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-13T17:17:06.8446556Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:17:06.8501248Z Deleting the contents of '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
+2026-10-13T17:17:06.8505080Z ##[group]Initializing the repository
+2026-10-13T17:17:06.8508492Z [command]/usr/bin/git init /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:17:06.8802545Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-13T17:17:06.8804544Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-13T17:17:06.8806207Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-13T17:17:06.8807432Z hint: call:
+2026-10-13T17:17:06.8808242Z hint:
+2026-10-13T17:17:06.8809126Z hint: 	git config --global init.defaultBranch <name>
+2026-10-13T17:17:06.8810146Z hint:
+2026-10-13T17:17:06.8811331Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-13T17:17:06.8812714Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-13T17:17:06.8813859Z hint:
+2026-10-13T17:17:06.8814600Z hint: 	git branch -m <name>
+2026-10-13T17:17:06.8815358Z hint:
+2026-10-13T17:17:06.8816288Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-13T17:17:06.8818158Z Initialized empty Git repository in /home/runner/work/ZWRT-opkg/ZWRT-opkg/.git/
+2026-10-13T17:17:06.8820126Z [command]/usr/bin/git remote add origin https://github.com/KuwiNet/ZWRT-opkg
+2026-10-13T17:17:06.8864594Z ##[endgroup]
+2026-10-13T17:17:06.8866124Z ##[group]Disabling automatic garbage collection
+2026-10-13T17:17:06.8867467Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-13T17:17:06.8912723Z ##[endgroup]
+2026-10-13T17:17:06.8913748Z ##[group]Setting up auth
+2026-10-13T17:17:06.8914674Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-13T17:17:06.8938270Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-13T17:17:06.9301546Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-13T17:17:06.9331333Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-13T17:17:06.9514033Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-13T17:17:06.9543790Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-13T17:17:06.9723887Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-13T17:17:06.9761756Z ##[endgroup]
+2026-10-13T17:17:06.9763989Z ##[group]Fetching the repository
+2026-10-13T17:17:06.9772298Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +3447f9b0c38a0874a899f30cd4df790234aed232:refs/remotes/origin/main
+2026-10-13T17:17:07.3802471Z From https://github.com/KuwiNet/ZWRT-opkg
+2026-10-13T17:17:07.3803598Z  * [new ref]         3447f9b0c38a0874a899f30cd4df790234aed232 -> origin/main
+2026-10-13T17:17:07.3806793Z ##[endgroup]
+2026-10-13T17:17:07.3807758Z ##[group]Determining the checkout info
+2026-10-13T17:17:07.3809341Z ##[endgroup]
+2026-10-13T17:17:07.3815630Z [command]/usr/bin/git sparse-checkout disable
+2026-10-13T17:17:07.3909882Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-13T17:17:07.3939540Z ##[group]Checking out the ref
+2026-10-13T17:17:07.3943191Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-13T17:17:07.4000702Z Switched to a new branch 'main'
+2026-10-13T17:17:07.4005241Z branch 'main' set up to track 'origin/main'.
+2026-10-13T17:17:07.4008962Z ##[endgroup]
+2026-10-13T17:17:07.4041843Z [command]/usr/bin/git log -1 --format=%H
+2026-10-13T17:17:07.4062323Z 3447f9b0c38a0874a899f30cd4df790234aed232
+2026-10-13T17:17:07.4320276Z ##[group]Run actions/setup-python@v5
+2026-10-13T17:17:07.4321063Z with:
+2026-10-13T17:17:07.4321554Z   python-version: 3.12
+2026-10-13T17:17:07.4322133Z   check-latest: false
+2026-10-13T17:17:07.4325616Z   token: ***
+2026-10-13T17:17:07.4326161Z   update-environment: true
+2026-10-13T17:17:07.4326878Z   allow-prereleases: false
+2026-10-13T17:17:07.4327419Z   freethreaded: false
+2026-10-13T17:17:07.4327995Z env:
+2026-10-13T17:17:07.4328700Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:17:07.4329412Z ##[endgroup]
+2026-10-13T17:17:07.5572857Z ##[group]Installed versions
+2026-10-13T17:17:07.5707842Z (node:2295) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-13T17:17:07.5709432Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-13T17:17:07.5710828Z Successfully set up CPython (3.12.15)
+2026-10-13T17:17:07.5712171Z ##[endgroup]
+2026-10-13T17:17:07.5845138Z ##[group]Run python scripts/build_feed.py \
+2026-10-13T17:17:07.5845935Z [36;1mpython scripts/build_feed.py \[0m
+2026-10-13T17:17:07.5846620Z [36;1m  --config config/feed.json \[0m
+2026-10-13T17:17:07.5847263Z [36;1m  --out dist \[0m
+2026-10-13T17:17:07.5847809Z [36;1m  --work .work[0m
+2026-10-13T17:17:07.6257815Z shell: /usr/bin/bash -e {0}
+2026-10-13T17:17:07.6258712Z env:
+2026-10-13T17:17:07.6259638Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:17:07.6260446Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:07.6261832Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-10-13T17:17:07.6262691Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:07.6263539Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:07.6264351Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:07.6265279Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-10-13T17:17:07.6269020Z   GH_TOKEN: ***
+2026-10-13T17:17:07.6269544Z ##[endgroup]
+2026-10-13T17:17:13.5650538Z   生成 dist/all/Packages (2982 B) + .gz
+2026-10-13T17:17:13.5652281Z   生成 dist/x86_64/Packages (2982 B) + .gz
+2026-10-13T17:17:13.5653258Z   生成 dist/aarch64_cortex-a53/Packages (2982 B) + .gz
+2026-10-13T17:17:13.5654056Z   生成 dist/arm_cortex-a7/Packages (2982 B) + .gz
+2026-10-13T17:17:13.5655313Z 构建完成：5 个 ipk、5 个 apk，all/ + 3 个架构目录已生成于 dist
+2026-10-13T17:17:13.5800410Z ##[group]Run docker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '
+2026-10-13T17:17:13.5801414Z [36;1mdocker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '[0m
+2026-10-13T17:17:13.5802072Z [36;1m  echo "apk version: $(apk --version)"[0m
+2026-10-13T17:17:13.5802500Z [36;1m  failed=0[0m
+2026-10-13T17:17:13.5802976Z [36;1m  for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do[0m
+2026-10-13T17:17:13.5803492Z [36;1m    echo "===== $d ====="[0m
+2026-10-13T17:17:13.5804009Z [36;1m    ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }[0m
+2026-10-13T17:17:13.5804857Z [36;1m    ( cd /dist/$d && apk index --allow-untrusted --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )[0m
+2026-10-13T17:17:13.5805701Z [36;1m    if [ -f /dist/$d/APKINDEX.tar.gz ]; then echo "index OK $d"; else echo "INDEX MISSING $d"; failed=1; fi[0m
+2026-10-13T17:17:13.5806539Z [36;1m    echo "--- files in $d ---"[0m
+2026-10-13T17:17:13.5807173Z [36;1m    ls -la /dist/$d[0m
+2026-10-13T17:17:13.5807586Z [36;1m  done[0m
+2026-10-13T17:17:13.5807988Z [36;1m  exit $failed[0m
+2026-10-13T17:17:13.5808438Z [36;1m'[0m
+2026-10-13T17:17:13.5854518Z shell: /usr/bin/bash -e {0}
+2026-10-13T17:17:13.5855073Z env:
+2026-10-13T17:17:13.5856161Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:17:13.5856827Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:13.5857475Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-10-13T17:17:13.5858139Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:13.5858738Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:13.5859312Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:13.5859921Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-10-13T17:17:13.5860719Z ##[endgroup]
+2026-10-13T17:17:13.6652347Z Unable to find image 'alpine:latest' locally
+2026-10-13T17:17:14.3860243Z latest: Pulling from library/alpine
+2026-10-13T17:17:14.5892026Z e2de96513ba9: Already exists
+2026-10-13T17:17:14.8142149Z Digest: sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+2026-10-13T17:17:14.8159102Z Status: Downloaded newer image for alpine:latest
+2026-10-13T17:17:15.9457602Z apk version: apk-tools 3.0.8-r0, compiled for x86_64.
+2026-10-13T17:17:15.9458804Z ===== all =====
+2026-10-13T17:17:15.9464914Z /dist/all/luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9466055Z /dist/all/luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9467133Z /dist/all/luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9468076Z /dist/all/luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9469311Z /dist/all/luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9632038Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9633897Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
+2026-10-13T17:17:15.9634730Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9635834Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9637464Z ERROR: ./luci-theme-***-3.5.10-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9638169Z INDEX MISSING all
+2026-10-13T17:17:15.9638686Z --- files in all ---
+2026-10-13T17:17:15.9639950Z total 25524
+2026-10-13T17:17:15.9646930Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:17 .
+2026-10-13T17:17:15.9647946Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:17 ..
+2026-10-13T17:17:15.9648979Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:17 Packages
+2026-10-13T17:17:15.9649919Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:17 Packages.gz
+2026-10-13T17:17:15.9651347Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:17 luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9652913Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:17 luci-app-5gmodem_3.4.0-r1_all.ipk
+2026-10-13T17:17:15.9653876Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:17 luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9654849Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:17 luci-app-afrp_1.1.8_all.ipk
+2026-10-13T17:17:15.9655697Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9656644Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.ipk
+2026-10-13T17:17:15.9657551Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9659042Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.ipk
+2026-10-13T17:17:15.9660082Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:17 luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9661480Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:17 luci-theme-***_3.5.10_all.ipk
+2026-10-13T17:17:15.9662808Z ===== aarch64_cortex-a53 =====
+2026-10-13T17:17:15.9663874Z /dist/aarch64_cortex-a53/luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9664652Z /dist/aarch64_cortex-a53/luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9665300Z /dist/aarch64_cortex-a53/luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9666701Z /dist/aarch64_cortex-a53/luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9667684Z /dist/aarch64_cortex-a53/luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9745187Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9746118Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
+2026-10-13T17:17:15.9746794Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9747580Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9748474Z ERROR: ./luci-theme-***-3.5.10-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9751809Z INDEX MISSING aarch64_cortex-a53
+2026-10-13T17:17:15.9753129Z --- files in aarch64_cortex-a53 ---
+2026-10-13T17:17:15.9753762Z total 25524
+2026-10-13T17:17:15.9754348Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:17 .
+2026-10-13T17:17:15.9754991Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:17 ..
+2026-10-13T17:17:15.9755707Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:17 Packages
+2026-10-13T17:17:15.9756630Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:17 Packages.gz
+2026-10-13T17:17:15.9757829Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:17 luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9759198Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:17 luci-app-5gmodem_3.4.0-r1_all.ipk
+2026-10-13T17:17:15.9760261Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:17 luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9761438Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:17 luci-app-afrp_1.1.8_all.ipk
+2026-10-13T17:17:15.9762135Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9762886Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.ipk
+2026-10-13T17:17:15.9763520Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9764202Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.ipk
+2026-10-13T17:17:15.9764948Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:17 luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9765659Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:17 luci-theme-***_3.5.10_all.ipk
+2026-10-13T17:17:15.9766220Z ===== x86_64 =====
+2026-10-13T17:17:15.9766821Z /dist/x86_64/luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9767336Z /dist/x86_64/luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9767851Z /dist/x86_64/luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9768391Z /dist/x86_64/luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9768905Z /dist/x86_64/luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9849396Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9850861Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
+2026-10-13T17:17:15.9852160Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9853252Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9854533Z ERROR: ./luci-theme-***-3.5.10-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9855660Z INDEX MISSING x86_64
+2026-10-13T17:17:15.9856505Z --- files in x86_64 ---
+2026-10-13T17:17:15.9857559Z total 25524
+2026-10-13T17:17:15.9858133Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:17 .
+2026-10-13T17:17:15.9859252Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:17 ..
+2026-10-13T17:17:15.9860003Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:17 Packages
+2026-10-13T17:17:15.9860536Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:17 Packages.gz
+2026-10-13T17:17:15.9861540Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:17 luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9862566Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:17 luci-app-5gmodem_3.4.0-r1_all.ipk
+2026-10-13T17:17:15.9863442Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:17 luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9864347Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:17 luci-app-afrp_1.1.8_all.ipk
+2026-10-13T17:17:15.9865223Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9866110Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.ipk
+2026-10-13T17:17:15.9866966Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9867857Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.ipk
+2026-10-13T17:17:15.9868787Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:17 luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9869643Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:17 luci-theme-***_3.5.10_all.ipk
+2026-10-13T17:17:15.9870114Z ===== arm_cortex-a7 =====
+2026-10-13T17:17:15.9870527Z /dist/arm_cortex-a7/luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9871388Z /dist/arm_cortex-a7/luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9871828Z /dist/arm_cortex-a7/luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9872297Z /dist/arm_cortex-a7/luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9872809Z /dist/arm_cortex-a7/luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9952145Z ERROR: ./luci-app-5gmodem-3.4.0-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9953689Z ERROR: ./luci-app-afrp-1.1.8-r1.apk: unexpected end of file
+2026-10-13T17:17:15.9954894Z ERROR: ./luci-i18n-5gmodem-zh-cn.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9955955Z ERROR: ./luci-i18n-5gmodem-zh-tw.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9957040Z ERROR: ./luci-theme-***-3.5.10-r1.apk: file format not supported (in this applet)
+2026-10-13T17:17:15.9958241Z INDEX MISSING arm_cortex-a7
+2026-10-13T17:17:15.9958992Z --- files in arm_cortex-a7 ---
+2026-10-13T17:17:15.9959684Z total 25524
+2026-10-13T17:17:15.9960365Z drwxr-xr-x    2 1001     1001          4096 Oct 13 17:17 .
+2026-10-13T17:17:15.9961332Z drwxr-xr-x    6 1001     1001          4096 Oct 13 17:17 ..
+2026-10-13T17:17:15.9962308Z -rw-r--r--    1 1001     1001          2982 Oct 13 17:17 Packages
+2026-10-13T17:17:15.9963068Z -rw-r--r--    1 1001     1001          1231 Oct 13 17:17 Packages.gz
+2026-10-13T17:17:15.9964066Z -rw-r--r--    1 1001     1001       1533327 Oct 13 17:17 luci-app-5gmodem-3.4.0-r1.apk
+2026-10-13T17:17:15.9965407Z -rw-r--r--    1 1001     1001       1543592 Oct 13 17:17 luci-app-5gmodem_3.4.0-r1_all.ipk
+2026-10-13T17:17:15.9966219Z -rw-r--r--    1 1001     1001         17984 Oct 13 17:17 luci-app-afrp-1.1.8-r1.apk
+2026-10-13T17:17:15.9966954Z -rw-r--r--    1 1001     1001         18349 Oct 13 17:17 luci-app-afrp_1.1.8_all.ipk
+2026-10-13T17:17:15.9967983Z -rw-r--r--    1 1001     1001         47062 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.apk
+2026-10-13T17:17:15.9968780Z -rw-r--r--    1 1001     1001         48033 Oct 13 17:17 luci-i18n-5gmodem-zh-cn.ipk
+2026-10-13T17:17:15.9969533Z -rw-r--r--    1 1001     1001         47564 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.apk
+2026-10-13T17:17:15.9970355Z -rw-r--r--    1 1001     1001         48640 Oct 13 17:17 luci-i18n-5gmodem-zh-tw.ipk
+2026-10-13T17:17:15.9971401Z -rw-r--r--    1 1001     1001      11394244 Oct 13 17:17 luci-theme-***-3.5.10-r1.apk
+2026-10-13T17:17:15.9972294Z -rw-r--r--    1 1001     1001      11407100 Oct 13 17:17 luci-theme-***_3.5.10_all.ipk
+2026-10-13T17:17:16.1677794Z ##[error]Process completed with exit code 1.
+2026-10-13T17:17:16.1756607Z ##[group]Run echo "## Feed build result" >> $GITHUB_STEP_SUMMARY
+2026-10-13T17:17:16.1757219Z [36;1mecho "## Feed build result" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:17:16.1757699Z [36;1mecho "- 包数：$(python - <<'PY'[0m
+2026-10-13T17:17:16.1758041Z [36;1mimport glob[0m
+2026-10-13T17:17:16.1758446Z [36;1mn = len(glob.glob('dist/all/*.ipk'))[0m
+2026-10-13T17:17:16.1758808Z [36;1mprint(n)[0m
+2026-10-13T17:17:16.1759131Z [36;1mPY[0m
+2026-10-13T17:17:16.1759459Z [36;1m)" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:17:16.1759887Z [36;1mecho "- 架构索引：$(ls dist | tr '\n' ' ')" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:17:16.1806037Z shell: /usr/bin/bash -e {0}
+2026-10-13T17:17:16.1806462Z env:
+2026-10-13T17:17:16.1807082Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:17:16.1807615Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:16.1808130Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-10-13T17:17:16.1808834Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:16.1809304Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:16.1809950Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:17:16.1810445Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-10-13T17:17:16.1811065Z ##[endgroup]
+2026-10-13T17:17:16.2225154Z Post job cleanup.
+2026-10-13T17:17:16.3063834Z [command]/usr/bin/git version
+2026-10-13T17:17:16.3102269Z git version 2.55.0
+2026-10-13T17:17:16.3141504Z Temporarily overriding HOME='/home/runner/work/_temp/65abb2c6-0762-462d-9d09-0a438e1d06c2' before making global git config changes
+2026-10-13T17:17:16.3142549Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-13T17:17:16.3147562Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:17:16.3185795Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-13T17:17:16.3218758Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-13T17:17:16.3423822Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-13T17:17:16.3447421Z http.https://github.com/.extraheader
+2026-10-13T17:17:16.3457218Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-13T17:17:16.3505463Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-13T17:17:16.3701567Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-13T17:17:16.3735040Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-13T17:17:16.4125618Z Cleaning up orphan processes
+2026-10-13T17:17:16.4622736Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

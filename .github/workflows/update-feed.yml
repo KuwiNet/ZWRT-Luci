@@ -46,10 +46,10 @@ jobs:
           # 用 Actions 内置 token 访问 GitHub API（匿名会被限流 403）
           GH_TOKEN: ${{ github.token }}
 
-      # apk 源的索引（APKINDEX.tar.gz）必须用 apk-tools v3 生成——
+      # apk 源的 v3 索引（packages.adb）必须用 apk-tools v3 的 mkndx 生成——
       # 它才能同时正确处理 v2(afrp) 与 v3(5gmodem/zwrt) 包并算出正确校验和。
       # 这里用 Docker 跑 Alpine(latest-stable, 自带 apk-tools 3.x)。
-      - name: Generate apk index (APKINDEX.tar.gz) via apk-tools v3
+      - name: Generate apk v3 index (packages.adb) via apk mkndx
         run: |
           docker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '
             echo "apk version: $(apk --version)"
@@ -57,36 +57,34 @@ jobs:
             for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
               echo "===== $d ====="
               ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }
-              ( cd /dist/$d && apk index --allow-untrusted --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )
-              if [ -f /dist/$d/APKINDEX.tar.gz ]; then echo "index OK $d"; else echo "INDEX MISSING $d"; failed=1; fi
+              ( cd /dist/$d && apk mkndx --allow-untrusted -o packages.adb ./*.apk 2>&1 | tail -30 )
+              if [ -f /dist/$d/packages.adb ]; then echo "mkndx OK $d"; else echo "MKNDX MISSING $d"; failed=1; fi
               echo "--- files in $d ---"
               ls -la /dist/$d
             done
             exit $failed
           '
 
-      # 端到端验证：断言生成的索引必须包含全部 5 个 apk，否则视为失败（不同步坏源）
-      - name: Verify apk feed (index must contain all 5 apk)
+      # 端到端验证：用 apk adbdump 检查 v3 索引必须包含全部 5 个 apk，否则视为失败（不同步坏源）
+      - name: Verify apk v3 feed (packages.adb must contain all 5 apk)
         run: |
           docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
-            echo "== apk feed verification =="
+            echo "== apk v3 feed verification =="
             ok=1
             for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
               echo "===== $d ====="
-              test -f /dist/$d/APKINDEX.tar.gz || { echo "NO INDEX in $d"; ok=0; continue; }
-              rm -rf /tmp/x && mkdir -p /tmp/x
-              tar -xf /dist/$d/APKINDEX.tar.gz -C /tmp/x
-              echo "--- index contains packages ---"
-              grep -E "^P:" /tmp/x/APKINDEX
+              test -f /dist/$d/packages.adb || { echo "NO packages.adb in $d"; ok=0; continue; }
+              echo "--- index contains (adbdump P: lines) ---"
+              apk adbdump /dist/$d/packages.adb 2>&1 | grep -E "^[[:space:]]*P:" | head -20
               for p in luci-app-afrp luci-app-5gmodem luci-theme-zwrt luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw; do
-                if grep -q "^P:$p\$" /tmp/x/APKINDEX; then echo "HAS $p"; else echo "MISSING $p  <<<"; ok=0; fi
+                if apk adbdump /dist/$d/packages.adb 2>&1 | grep -qE "^[[:space:]]*P:[[:space:]]*$p(\$|[[:space:]])"; then echo "HAS $p"; else echo "MISSING $p  <<<"; ok=0; fi
               done
               echo "--- verify each package integrity ---"
               for f in /dist/$d/*.apk; do
                 apk verify --allow-untrusted "$f" >/dev/null 2>&1 && echo "OK  $(basename $f)" || { echo "FAIL $(basename $f)"; ok=0; }
               done
             done
-            [ "$ok" = 1 ] && echo "== APK FEED VERIFIED ==" || { echo "== APK FEED HAS PROBLEMS, ABORT BEFORE SYNC =="; exit 1; }
+            [ "$ok" = 1 ] && echo "== APK V3 FEED VERIFIED ==" || { echo "== APK V3 FEED HAS PROBLEMS, ABORT BEFORE SYNC =="; exit 1; }
           '
 
       - name: Install rclone

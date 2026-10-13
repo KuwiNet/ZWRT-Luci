@@ -1,0 +1,2 @@
+﻿size: 17984 magic: 1f8b0800 b'\x1f\x8b\x08\x00'
+gzip ok, declen: 80896 tar? False
