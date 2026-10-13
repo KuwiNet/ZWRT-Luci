@@ -67,8 +67,7 @@ jobs:
             --fast-list \
             --transfers 8 \
             --checkers 8 \
-            --log-level INFO \
-            --verbose 1
+            --log-level INFO
 
       - name: Build summary
         if: always()
