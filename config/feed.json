@@ -10,7 +10,7 @@
     {
       "name": "5gmodem",
       "repo": "fildunsky/luci-app-5gmodem",
-      "asset_regex": "^luci-app-5gmodem_[0-9].*\\.ipk$",
+      "asset_regex": "^luci-(app-5gmodem_[0-9]|i18n-5gmodem-(zh-cn|zh-tw)).*\\.ipk$",
       "scan_releases": 1
     },
     {

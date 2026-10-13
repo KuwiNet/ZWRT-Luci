@@ -9,7 +9,7 @@ GitHub Actions 定时从各插件的 GitHub Release 拉取 ipk → 生成 `Packa
 | 插件 | 仓库 | 打包的 ipk |
 | --- | --- | --- |
 | zwrt 主题 | `KuWiNet/ZWRT-Theme` | `luci-theme-zwrt`、`luci-app-zwrt` |
-| 5gmodem | `fildunsky/luci-app-5gmodem` | `luci-app-5gmodem` |
+| 5gmodem | `fildunsky/luci-app-5gmodem` | `luci-app-5gmodem` + 中文语言包 `luci-i18n-5gmodem-zh-cn`/`zh-tw` |
 | afrp | `afrpnet/afrp-client` | `luci-app-afrp` |
 
 > 三个插件目前都产出 `Architecture: all` 的 ipk。仓库结构做成多架构索引，
