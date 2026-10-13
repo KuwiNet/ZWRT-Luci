@@ -2,7 +2,7 @@ name = "zwrt-opkg"
 main = "worker.js"
 compatibility_date = "2024-09-01"
 
-# 绑定 R2 桶：bucket_name 改成你实际创建的桶名
+# 绑定 R2 桶：bucket_name 必须和实际桶名一致（本部署为 zwrt）
 [[r2_buckets]]
 binding = "OPKG_BUCKET"
-bucket_name = "zwrt-opkg"
+bucket_name = "zwrt"
