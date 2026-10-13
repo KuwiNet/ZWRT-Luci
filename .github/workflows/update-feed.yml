@@ -65,26 +65,25 @@ jobs:
             exit $failed
           '
 
-      # 端到端验证：真正用 apk 从这个源安装 4 个 v3 包（--no-deps 跳过依赖，
-      # --allow-untrusted 允许未签名仓库）。apk 会校验索引里的校验和，错则拒绝。
-      # afrp 的 apk 是 v2，与 apk-tools v3 不兼容，只走 ipk/opkg 源。
-      - name: Verify apk v3 feed (install 4 v3 packages from repo)
+      # 端到端验证：用 apk fetch 从这个源抓取 4 个 v3 包（按索引解析 + 校验和由 apk 校验，
+      # 不做依赖解析，不会因缺依赖误判）。afrp 的 apk 是 v2，与 apk-tools v3 不兼容，只走 ipk。
+      - name: Verify apk v3 feed (fetch 4 v3 packages from repo)
         run: |
           docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
-            echo "== apk v3 feed end-to-end verify (apk add) =="
+            echo "== apk v3 feed end-to-end verify (apk fetch) =="
             ok=1
             for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
               echo "===== $d ====="
               test -f /dist/$d/packages.adb || { echo "NO packages.adb in $d"; ok=0; continue; }
-              echo "--- packages.adb adbdump (first 25 lines) ---"
-              apk adbdump /dist/$d/packages.adb 2>&1 | head -25
-              echo "--- apk add each v3 package from this repo (checksum verified by apk) ---"
+              echo "--- packages in packages.adb (adbdump name: lines) ---"
+              apk adbdump /dist/$d/packages.adb 2>&1 | grep -E "^[[:space:]]*-[[:space:]]*name:" | head -20
+              echo "--- apk fetch each v3 package from this repo (checksum verified by apk) ---"
+              mkdir -p /tmp/fetch_$d && cd /tmp/fetch_$d
               for p in luci-app-5gmodem luci-theme-zwrt luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw; do
-                rm -rf /tmp/r_$d
-                if apk add --initdb --root /tmp/r_$d --allow-untrusted --repository "file:///dist/$d" --no-deps "$p" >/tmp/apkout 2>&1; then
-                  echo "INSTALLED $p"
+                if apk fetch --allow-untrusted --repository "file:///dist/$d" "$p" >/tmp/apkout 2>&1; then
+                  echo "FETCHED $p ($(basename /tmp/fetch_$d/$p*))"
                 else
-                  echo "INSTALL FAIL $p <<<"
+                  echo "FETCH FAIL $p <<<"
                   tail -5 /tmp/apkout
                   ok=0
                 fi
