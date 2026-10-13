@@ -30,10 +30,10 @@
 在路由器编辑 `/etc/opkg/customfeeds.conf`，添加一行：
 
 ```
-src/gz zwrt_<架构> https://opkg.zwrt.de/opkg/<架构>
+src/gz zwrt https://opkg.zwrt.de/opkg/<架构>
 ```
 
-把 `<架构>` 替换为你路由器的实际架构（执行 `opkg print-architecture` 可查看，常见为 `x86_64`、`aarch64_cortex-a53` 等）。
+把 `<架构>` 替换为你路由器的实际架构（执行 `opkg print-architecture` 可查看，常见为 `x86_64`、`aarch64_cortex-a53` 等）。注意：同一台路由器上 `src/gz` 的源名 `zwrt` 要唯一，一台设备只需添加对应自己架构的那一行。
 
 然后更新并安装：
 
