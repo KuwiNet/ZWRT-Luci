@@ -19,7 +19,6 @@
       "name": "afrp",
       "repo": "afrpnet/afrp-client",
       "asset_regex": "^luci-app-afrp_[0-9].*\\.ipk$",
-      "apk_regex": "^luci-app-afrp-[0-9].*\\.apk$",
       "scan_releases": 1
     }
   ]
