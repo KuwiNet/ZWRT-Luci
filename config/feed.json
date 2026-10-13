@@ -1,0 +1,23 @@
+{
+  "architectures": ["all", "x86_64", "aarch64_cortex-a53", "arm_cortex-a7"],
+  "plugins": [
+    {
+      "name": "zwrt",
+      "repo": "KuWiNet/ZWRT-Theme",
+      "asset_regex": "^(luci-theme-zwrt|luci-app-zwrt)_[0-9].*\\.ipk$",
+      "scan_releases": 2
+    },
+    {
+      "name": "5gmodem",
+      "repo": "fildunsky/luci-app-5gmodem",
+      "asset_regex": "^luci-app-5gmodem_[0-9].*\\.ipk$",
+      "scan_releases": 1
+    },
+    {
+      "name": "afrp",
+      "repo": "afrpnet/afrp-client",
+      "asset_regex": "^luci-app-afrp_[0-9].*\\.ipk$",
+      "scan_releases": 1
+    }
+  ]
+}

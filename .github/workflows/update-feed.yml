@@ -1,0 +1,83 @@
+name: Build & Sync OpenWrt opkg Feed
+
+# 触发方式：
+#  1) 定时（默认每天 03:17 UTC 一次，可自行调整 cron）
+#  2) 手动（GitHub 页面点 Run workflow）
+#  3) 修改 config/ 或 scripts/ 时自动触发
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'config/**'
+      - 'scripts/**'
+
+# 同一时间只允许一个构建在跑，避免 R2 目录不一致
+concurrency:
+  group: feed-build
+  cancel-in-progress: false
+
+env:
+  # R2 S3 兼容端点（账号 ID 决定）
+  R2_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build feed (拉取 ipk + 生成 Packages / Packages.gz)
+        run: |
+          python scripts/build_feed.py \
+            --config config/feed.json \
+            --out dist \
+            --work .work
+        env:
+          # 可选：提升 GitHub API 速率限制。匿名也可用（60 次/小时）。
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Install rclone
+        run: |
+          curl -s https://rclone.org/install.sh | sudo bash
+          rclone version
+
+      - name: Configure rclone R2 remote (临时，仅本 job 有效)
+        run: |
+          rclone config create r2 s3 \
+            provider Cloudflare \
+            access_key_id "${{ secrets.R2_ACCESS_KEY_ID }}" \
+            secret_access_key "${{ secrets.R2_SECRET_ACCESS_KEY }}" \
+            endpoint "${{ env.R2_ENDPOINT }}" \
+            acl private \
+            env_auth false
+
+      - name: Sync dist -> R2 bucket 的 opkg/ 目录
+        run: |
+          rclone sync dist "r2:${{ secrets.R2_BUCKET }}/opkg" \
+            --fast-list \
+            --transfers 8 \
+            --checkers 8 \
+            --log-level INFO \
+            --verbose 1
+
+      - name: Build summary
+        if: always()
+        run: |
+          echo "## Feed build result" >> $GITHUB_STEP_SUMMARY
+          echo "- 包数：$(python - <<'PY'
+          import glob
+          n = len(glob.glob('dist/all/*.ipk'))
+          print(n)
+          PY
+          )" >> $GITHUB_STEP_SUMMARY
+          echo "- 架构索引：$(ls dist | tr '\n' ' ')" >> $GITHUB_STEP_SUMMARY

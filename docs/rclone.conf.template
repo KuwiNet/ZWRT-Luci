@@ -1,0 +1,11 @@
+# rclone 配置文件模板 —— 放在本地 ~/.config/rclone/rclone.conf 或 CI 中。
+# 也可直接在 GitHub Actions 里用 `rclone config create` 动态生成（见 workflow）。
+# 把尖括号 <...> 替换成你的实际值。
+
+[zwrt-r2]
+type = s3
+provider = Cloudflare
+access_key_id = <R2_ACCESS_KEY_ID>
+secret_access_key = <R2_SECRET_ACCESS_KEY>
+endpoint = https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
+acl = private

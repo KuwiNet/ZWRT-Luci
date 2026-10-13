@@ -1,0 +1,17 @@
+# 构建产物 / 测试目录
+dist/
+dist_test/
+.work/
+.work_test/
+
+# Python / 本地工具
+__pycache__/
+*.pyc
+node_modules/
+
+# 本地 rclone 配置（含密钥，勿提交）
+rclone.conf
+
+# 编辑器
+.vscode/
+.idea/
