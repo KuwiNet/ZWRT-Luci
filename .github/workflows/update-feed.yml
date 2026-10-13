@@ -43,8 +43,8 @@ jobs:
             --out dist \
             --work .work
         env:
-          # 可选：提升 GitHub API 速率限制。匿名也可用（60 次/小时）。
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          # 用 Actions 内置 token 访问 GitHub API（匿名会被限流 403）
+          GH_TOKEN: ${{ github.token }}
 
       # apk 源的索引（APKINDEX.tar.gz）必须用 apk-tools v3 生成——
       # 它才能同时正确处理 v2(afrp) 与 v3(5gmodem/zwrt) 包并算出正确校验和。

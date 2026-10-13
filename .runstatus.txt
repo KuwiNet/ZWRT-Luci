@@ -1,0 +1,2 @@
+﻿run status=completed conclusion=failure
+job: build-and-sync conclusion=failure

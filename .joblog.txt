@@ -1,0 +1,180 @@
+﻿2026-10-13T17:10:28.9970694Z Current runner version: '2.337.0'
+2026-10-13T17:10:28.9997212Z ##[group]Runner Image Provisioner
+2026-10-13T17:10:28.9998235Z Hosted Compute Agent
+2026-10-13T17:10:28.9998923Z Version: 20261002.596
+2026-10-13T17:10:28.9999655Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-13T17:10:29.0000499Z Build Date: 2026-10-02T22:28:27Z
+2026-10-13T17:10:29.0001247Z Worker ID: {4fc881a6-469f-49d5-bbba-2010bb0686b1}
+2026-10-13T17:10:29.0002395Z Region: westus
+2026-10-13T17:10:29.0003035Z Cloud: Azure
+2026-10-13T17:10:29.0003604Z ##[endgroup]
+2026-10-13T17:10:29.0005402Z ##[group]Operating System
+2026-10-13T17:10:29.0006090Z Ubuntu
+2026-10-13T17:10:29.0007181Z 24.04.5
+2026-10-13T17:10:29.0007785Z LTS
+2026-10-13T17:10:29.0008368Z ##[endgroup]
+2026-10-13T17:10:29.0008992Z ##[group]Runner Image
+2026-10-13T17:10:29.0009661Z Image: ubuntu-24.04
+2026-10-13T17:10:29.0010361Z Version: 20261004.327.1
+2026-10-13T17:10:29.0011982Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-13T17:10:29.0013685Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-13T17:10:29.0014779Z ##[endgroup]
+2026-10-13T17:10:29.0015975Z ##[group]GITHUB_TOKEN Permissions
+2026-10-13T17:10:29.0018286Z Contents: read
+2026-10-13T17:10:29.0018939Z Metadata: read
+2026-10-13T17:10:29.0019546Z ##[endgroup]
+2026-10-13T17:10:29.0022320Z Secret source: Actions
+2026-10-13T17:10:29.0023461Z Cache mode: write
+2026-10-13T17:10:29.0024233Z Prepare workflow directory
+2026-10-13T17:10:29.0621061Z Prepare all required actions
+2026-10-13T17:10:29.0672113Z Getting action download info
+2026-10-13T17:10:29.3941234Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-13T17:10:29.5025992Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-13T17:10:29.6797348Z Complete job name: build-and-sync
+2026-10-13T17:10:29.7531968Z ##[group]Run actions/checkout@v4
+2026-10-13T17:10:29.7532969Z with:
+2026-10-13T17:10:29.7533437Z   repository: KuwiNet/ZWRT-opkg
+2026-10-13T17:10:29.7537145Z   token: ***
+2026-10-13T17:10:29.7537601Z   ssh-strict: true
+2026-10-13T17:10:29.7538055Z   ssh-user: git
+2026-10-13T17:10:29.7538516Z   persist-credentials: true
+2026-10-13T17:10:29.7539039Z   clean: true
+2026-10-13T17:10:29.7539508Z   sparse-checkout-cone-mode: true
+2026-10-13T17:10:29.7540055Z   fetch-depth: 1
+2026-10-13T17:10:29.7540505Z   fetch-tags: false
+2026-10-13T17:10:29.7540966Z   show-progress: true
+2026-10-13T17:10:29.7541618Z   lfs: false
+2026-10-13T17:10:29.7542067Z   submodules: false
+2026-10-13T17:10:29.7542542Z   set-safe-directory: true
+2026-10-13T17:10:29.7543072Z   allow-unsafe-pr-checkout: false
+2026-10-13T17:10:29.7543855Z env:
+2026-10-13T17:10:29.7544601Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:10:29.7545242Z ##[endgroup]
+2026-10-13T17:10:29.8584591Z Syncing repository: KuwiNet/ZWRT-opkg
+2026-10-13T17:10:29.8586604Z ##[group]Getting Git version info
+2026-10-13T17:10:29.8587486Z Working directory is '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
+2026-10-13T17:10:29.8588568Z [command]/usr/bin/git version
+2026-10-13T17:10:29.8678861Z git version 2.55.0
+2026-10-13T17:10:29.8701024Z ##[endgroup]
+2026-10-13T17:10:29.8720129Z Temporarily overriding HOME='/home/runner/work/_temp/992f3093-06e9-4660-8494-47a8557ca7ba' before making global git config changes
+2026-10-13T17:10:29.8723410Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-13T17:10:29.8726577Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:10:29.8786393Z Deleting the contents of '/home/runner/work/ZWRT-opkg/ZWRT-opkg'
+2026-10-13T17:10:29.8792218Z ##[group]Initializing the repository
+2026-10-13T17:10:29.8797440Z [command]/usr/bin/git init /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:10:29.8919734Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-13T17:10:29.8922480Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-13T17:10:29.8924173Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-13T17:10:29.8925651Z hint: call:
+2026-10-13T17:10:29.8926469Z hint:
+2026-10-13T17:10:29.8927443Z hint: 	git config --global init.defaultBranch <name>
+2026-10-13T17:10:29.8928577Z hint:
+2026-10-13T17:10:29.8929658Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-13T17:10:29.8931601Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-13T17:10:29.8932929Z hint:
+2026-10-13T17:10:29.8933679Z hint: 	git branch -m <name>
+2026-10-13T17:10:29.8934598Z hint:
+2026-10-13T17:10:29.8935819Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-13T17:10:29.8937803Z Initialized empty Git repository in /home/runner/work/ZWRT-opkg/ZWRT-opkg/.git/
+2026-10-13T17:10:29.8940768Z [command]/usr/bin/git remote add origin https://github.com/KuwiNet/ZWRT-opkg
+2026-10-13T17:10:29.9006494Z ##[endgroup]
+2026-10-13T17:10:29.9008460Z ##[group]Disabling automatic garbage collection
+2026-10-13T17:10:29.9010206Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-13T17:10:29.9044077Z ##[endgroup]
+2026-10-13T17:10:29.9045276Z ##[group]Setting up auth
+2026-10-13T17:10:29.9050813Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-13T17:10:29.9091733Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-13T17:10:29.9486315Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-13T17:10:29.9524544Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-13T17:10:29.9771177Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-13T17:10:29.9812765Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-13T17:10:30.0043702Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-13T17:10:30.0088112Z ##[endgroup]
+2026-10-13T17:10:30.0089084Z ##[group]Fetching the repository
+2026-10-13T17:10:30.0098592Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +737b7f78dc96433f735bd40bd188f454b081eaf0:refs/remotes/origin/main
+2026-10-13T17:10:30.3459319Z From https://github.com/KuwiNet/ZWRT-opkg
+2026-10-13T17:10:30.3460458Z  * [new ref]         737b7f78dc96433f735bd40bd188f454b081eaf0 -> origin/main
+2026-10-13T17:10:30.3465326Z ##[endgroup]
+2026-10-13T17:10:30.3466389Z ##[group]Determining the checkout info
+2026-10-13T17:10:30.3468193Z ##[endgroup]
+2026-10-13T17:10:30.3473523Z [command]/usr/bin/git sparse-checkout disable
+2026-10-13T17:10:30.3529484Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-13T17:10:30.3568342Z ##[group]Checking out the ref
+2026-10-13T17:10:30.3575194Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-13T17:10:30.3650846Z Switched to a new branch 'main'
+2026-10-13T17:10:30.3656103Z branch 'main' set up to track 'origin/main'.
+2026-10-13T17:10:30.3660994Z ##[endgroup]
+2026-10-13T17:10:30.3710057Z [command]/usr/bin/git log -1 --format=%H
+2026-10-13T17:10:30.3751949Z 737b7f78dc96433f735bd40bd188f454b081eaf0
+2026-10-13T17:10:30.4068817Z ##[group]Run actions/setup-python@v5
+2026-10-13T17:10:30.4069449Z with:
+2026-10-13T17:10:30.4069893Z   python-version: 3.12
+2026-10-13T17:10:30.4070391Z   check-latest: false
+2026-10-13T17:10:30.4074370Z   token: ***
+2026-10-13T17:10:30.4074855Z   update-environment: true
+2026-10-13T17:10:30.4075617Z   allow-prereleases: false
+2026-10-13T17:10:30.4076127Z   freethreaded: false
+2026-10-13T17:10:30.4076593Z env:
+2026-10-13T17:10:30.4077290Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:10:30.4077927Z ##[endgroup]
+2026-10-13T17:10:30.5526921Z ##[group]Installed versions
+2026-10-13T17:10:30.5660275Z (node:2285) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-13T17:10:30.5662569Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-13T17:10:30.5664146Z Successfully set up CPython (3.12.15)
+2026-10-13T17:10:30.5665807Z ##[endgroup]
+2026-10-13T17:10:30.5871985Z ##[group]Run python scripts/build_feed.py \
+2026-10-13T17:10:30.5872890Z [36;1mpython scripts/build_feed.py \[0m
+2026-10-13T17:10:30.5873516Z [36;1m  --config config/feed.json \[0m
+2026-10-13T17:10:30.5874108Z [36;1m  --out dist \[0m
+2026-10-13T17:10:30.5874608Z [36;1m  --work .work[0m
+2026-10-13T17:10:30.6175740Z shell: /usr/bin/bash -e {0}
+2026-10-13T17:10:30.6176424Z env:
+2026-10-13T17:10:30.6177339Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:10:30.6178154Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.6179055Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-10-13T17:10:30.6179959Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.6180781Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.6181838Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.6182755Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-10-13T17:10:30.6183484Z   GH_TOKEN: 
+2026-10-13T17:10:30.6183933Z ##[endgroup]
+2026-10-13T17:10:30.8239796Z [warn] 拉取 KuWiNet/ZWRT-Theme releases 失败: HTTP 403
+2026-10-13T17:10:30.8774304Z [warn] 拉取 fildunsky/luci-app-5gmodem releases 失败: HTTP 403
+2026-10-13T17:10:30.9340079Z [warn] 拉取 afrpnet/afrp-client releases 失败: HTTP 403
+2026-10-13T17:10:30.9342483Z 没有任何 ipk 下载成功，停止构建。
+2026-10-13T17:10:30.9458781Z ##[error]Process completed with exit code 1.
+2026-10-13T17:10:30.9623122Z ##[group]Run echo "## Feed build result" >> $GITHUB_STEP_SUMMARY
+2026-10-13T17:10:30.9625072Z [36;1mecho "## Feed build result" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:10:30.9626887Z [36;1mecho "- 包数：$(python - <<'PY'[0m
+2026-10-13T17:10:30.9628333Z [36;1mimport glob[0m
+2026-10-13T17:10:30.9629459Z [36;1mn = len(glob.glob('dist/all/*.ipk'))[0m
+2026-10-13T17:10:30.9630774Z [36;1mprint(n)[0m
+2026-10-13T17:10:30.9631832Z [36;1mPY[0m
+2026-10-13T17:10:30.9632753Z [36;1m)" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:10:30.9634269Z [36;1mecho "- 架构索引：$(ls dist | tr '\n' ' ')" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-13T17:10:30.9700941Z shell: /usr/bin/bash -e {0}
+2026-10-13T17:10:30.9702199Z env:
+2026-10-13T17:10:30.9704016Z   R2_ENDPOINT: https://***.r2.cloudflarestorage.com
+2026-10-13T17:10:30.9705743Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.9707718Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-10-13T17:10:30.9709769Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.9711658Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.9713425Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-10-13T17:10:30.9715204Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-10-13T17:10:30.9716682Z ##[endgroup]
+2026-10-13T17:10:31.0365006Z Post job cleanup.
+2026-10-13T17:10:31.1267341Z [command]/usr/bin/git version
+2026-10-13T17:10:31.1314805Z git version 2.55.0
+2026-10-13T17:10:31.1364700Z Temporarily overriding HOME='/home/runner/work/_temp/f952ad08-16ea-44da-8bf7-27b5e9eacb7e' before making global git config changes
+2026-10-13T17:10:31.1370042Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-13T17:10:31.1374845Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ZWRT-opkg/ZWRT-opkg
+2026-10-13T17:10:31.1427520Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-13T17:10:31.1472487Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-13T17:10:31.1733624Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-13T17:10:31.1768488Z http.https://github.com/.extraheader
+2026-10-13T17:10:31.1781827Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-13T17:10:31.1823336Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-13T17:10:31.2085211Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-13T17:10:31.2138454Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-13T17:10:31.2616900Z Cleaning up orphan processes
+2026-10-13T17:10:31.3040782Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
