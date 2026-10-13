@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Build feed (拉取 ipk + 生成 Packages / Packages.gz)
+      - name: Build feed (拉取 ipk+apk + 生成 Packages / Packages.gz)
         run: |
           python scripts/build_feed.py \
             --config config/feed.json \
@@ -45,6 +45,49 @@ jobs:
         env:
           # 可选：提升 GitHub API 速率限制。匿名也可用（60 次/小时）。
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # apk 源的索引（APKINDEX.tar.gz）必须用 apk-tools v3 生成——
+      # 它才能同时正确处理 v2(afrp) 与 v3(5gmodem/zwrt) 包并算出正确校验和。
+      # 这里用 Docker 跑 Alpine(latest-stable, 自带 apk-tools 3.x)。
+      - name: Generate apk index (APKINDEX.tar.gz) via apk-tools v3
+        run: |
+          docker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '
+            echo "apk version: $(apk --version)"
+            failed=0
+            for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
+              echo "===== $d ====="
+              ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }
+              ( cd /dist/$d && apk index --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )
+              if [ -f /dist/$d/APKINDEX.tar.gz ]; then echo "index OK $d"; else echo "INDEX MISSING $d"; failed=1; fi
+              echo "--- files in $d ---"
+              ls -la /dist/$d
+            done
+            exit $failed
+          '
+
+      # 端到端验证：断言生成的索引必须包含全部 5 个 apk，否则视为失败（不同步坏源）
+      - name: Verify apk feed (index must contain all 5 apk)
+        run: |
+          docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
+            echo "== apk feed verification =="
+            ok=1
+            for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
+              echo "===== $d ====="
+              test -f /dist/$d/APKINDEX.tar.gz || { echo "NO INDEX in $d"; ok=0; continue; }
+              rm -rf /tmp/x && mkdir -p /tmp/x
+              tar -xf /dist/$d/APKINDEX.tar.gz -C /tmp/x
+              echo "--- index contains packages ---"
+              grep -E "^P:" /tmp/x/APKINDEX
+              for p in luci-app-afrp luci-app-5gmodem luci-theme-zwrt luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw; do
+                if grep -q "^P:$p\$" /tmp/x/APKINDEX; then echo "HAS $p"; else echo "MISSING $p  <<<"; ok=0; fi
+              done
+              echo "--- verify each package integrity ---"
+              for f in /dist/$d/*.apk; do
+                apk verify --allow-untrusted "$f" >/dev/null 2>&1 && echo "OK  $(basename $f)" || { echo "FAIL $(basename $f)"; ok=0; }
+              done
+            done
+            [ "$ok" = 1 ] && echo "== APK FEED VERIFIED ==" || { echo "== APK FEED HAS PROBLEMS, ABORT BEFORE SYNC =="; exit 1; }
+          '
 
       - name: Install rclone
         run: |

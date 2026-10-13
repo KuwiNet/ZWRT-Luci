@@ -4,19 +4,22 @@
     {
       "name": "zwrt",
       "repo": "KuWiNet/ZWRT-Theme",
-      "asset_regex": "^(luci-theme-zwrt|luci-app-zwrt)_[0-9].*\\.ipk$",
-      "scan_releases": 2
+      "asset_regex": "^luci-theme-zwrt_[0-9].*\\.ipk$",
+      "apk_regex": "^luci-theme-zwrt-[0-9].*\\.apk$",
+      "scan_releases": 1
     },
     {
       "name": "5gmodem",
       "repo": "fildunsky/luci-app-5gmodem",
       "asset_regex": "^luci-(app-5gmodem_[0-9]|i18n-5gmodem-(zh-cn|zh-tw)).*\\.ipk$",
+      "apk_regex": "^luci-(app-5gmodem-[0-9].*|i18n-5gmodem-(zh-cn|zh-tw))\\.apk$",
       "scan_releases": 1
     },
     {
       "name": "afrp",
       "repo": "afrpnet/afrp-client",
       "asset_regex": "^luci-app-afrp_[0-9].*\\.ipk$",
+      "apk_regex": "^luci-app-afrp-[0-9].*\\.apk$",
       "scan_releases": 1
     }
   ]

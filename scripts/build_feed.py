@@ -19,6 +19,7 @@ build_feed.py — 从各插件的 GitHub Release 拉取 ipk，生成 OpenWrt opk
 """
 
 import argparse
+import base64
 import gzip
 import hashlib
 import io
@@ -30,6 +31,7 @@ import sys
 import tarfile
 import urllib.request
 import urllib.error
+import zlib
 
 # ---------------------------------------------------------------------------
 # 基础工具
@@ -72,7 +74,8 @@ def read_container(path):
         with tarfile.open(fileobj=io.BytesIO(payload), mode="r:") as tf:
             for m in tf.getmembers():
                 if m.isfile():
-                    members[m.name.lstrip("./")] = tf.extractfile(m).read()
+                    nm = m.name[2:] if m.name.startswith("./") else m.name
+                    members[nm] = tf.extractfile(m).read()
         return members
     if head[:8] == b"!<arch>\n":  # 经典 ar
         with open(path, "rb") as f:
@@ -157,6 +160,118 @@ def md5_file(path):
     return h.hexdigest()
 
 
+# ---------------------------------------------------------------------------
+# apk（Alpine 包）相关工具
+# ---------------------------------------------------------------------------
+
+def gzip_members(data):
+    """把一个可能由多个 gzip 流拼接而成的字节串，切成独立的 gzip 成员。"""
+    members = []
+    rest = data
+    while len(rest) >= 2 and rest[:2] == b"\x1f\x8b":
+        d = zlib.decompressobj(31)  # gzip window
+        d.decompress(rest)
+        consumed = len(rest) - len(d.unused_data)
+        members.append(rest[:consumed])
+        rest = d.unused_data
+    return members
+
+
+def apk_checksum(path):
+    """apk 的 C: 校验和 = control 段（含 .PKGINFO 的那个 gzip 流）的 SHA1，Q1+base64。
+
+    依据 Alpine Apk spec：包校验和是包内 control gzip 流的 SHA1，base64 编码后前缀 Q1。
+    """
+    with open(path, "rb") as f:
+        raw = f.read()
+    for m in gzip_members(raw):
+        try:
+            with tarfile.open(fileobj=io.BytesIO(m), mode="r:gz") as tf:
+                if any(x.name.endswith(".PKGINFO") for x in tf.getmembers()):
+                    return "Q1" + base64.b64encode(hashlib.sha1(m).digest()).decode()
+        except Exception:
+            continue
+    raise ValueError(f"{path}: 未找到 apk 的 control 段（含 .PKGINFO）")
+
+
+def parse_pkginfo(path):
+    """解析 apk 内的 .PKGINFO（'key = value' 形式，key 可重复）。返回 {key: [values]}。"""
+    members = read_container(path)
+    raw = members.get(".PKGINFO")
+    if raw is None:
+        raise ValueError(f"{path}: 未找到 .PKGINFO")
+    d = {}
+    for line in raw.decode("utf-8", "replace").splitlines():
+        line = line.strip()
+        if "=" in line:
+            k, v = line.split("=", 1)
+            d.setdefault(k.strip(), []).append(v.strip())
+    return d
+
+
+def build_apkindex_text(apk_files):
+    """apk_files: [(filename, abspath)]。返回 APKINDEX 文件文本（utf-8 字节）。
+
+    按 pkgname 去重保留最高 pkgver；条目字段对齐 Alpine/OpenWrt 官方格式。
+    """
+    entries = {}  # pkgname -> dict
+    for filename, abspath in apk_files:
+        try:
+            pi = parse_pkginfo(abspath)
+        except Exception as e:
+            print(f"[warn] {filename} 解析 .PKGINFO 失败: {e}", file=sys.stderr)
+            continue
+        pkg = pi.get("pkgname", [None])[0]
+        ver = pi.get("pkgver", [""])[0]
+        if not pkg:
+            print(f"[warn] {filename} 缺少 pkgname，跳过", file=sys.stderr)
+            continue
+        if pkg in entries and ver <= entries[pkg]["ver"]:
+            continue
+        entries[pkg] = dict(pi=pi, ver=ver, filename=filename,
+                            size=os.path.getsize(abspath),
+                            checksum=apk_checksum(abspath))
+    blocks = []
+    for pkg in sorted(entries):
+        e = entries[pkg]
+        pi = e["pi"]
+        def g(k):
+            return pi.get(k, [""])[0]
+        block = [
+            f"C:{e['checksum']}",
+            f"P:{pkg}",
+            f"V:{e['ver']}",
+            f"A:{g('arch') or 'noarch'}",
+            f"S:{e['size']}",
+            f"I:{g('size') or '0'}",
+            f"T:{g('pkgdesc')}",
+            f"U:{g('url')}",
+            f"L:{g('license')}",
+            f"o:{g('origin') or pkg}",
+            f"m:{g('packager')}",
+            f"t:{g('builddate') or '0'}",
+        ]
+        for dep in pi.get("depend", []):
+            block.append(f"D:{dep}")
+        blocks.append("\n".join(block))
+    return ("\n\n".join(blocks) + "\n").encode("utf-8")
+
+
+def write_apkindex(dir_path, apk_files):
+    """在 dir_path 写入 APKINDEX.tar.gz（内含单个 APKINDEX 文本文件，gzip tar）。"""
+    data = build_apkindex_text(apk_files)
+    tarbuf = io.BytesIO()
+    with tarfile.open(fileobj=tarbuf, mode="w:gz") as tf:
+        ti = tarfile.TarInfo("APKINDEX")
+        ti.size = len(data)
+        ti.mtime = 0
+        tf.addfile(ti, io.BytesIO(data))
+    out = os.path.join(dir_path, "APKINDEX.tar.gz")
+    with open(out, "wb") as f:
+        f.write(tarbuf.getvalue())
+    print(f"  生成 {out} ({len(data)} B 索引)")
+
+
 def package_stem(filename):
     """去掉 '_版本_架构.ipk' 后缀，得到包规范名（用于去重）。"""
     base = os.path.basename(filename)
@@ -176,11 +291,13 @@ def gzip_bytes(data, mtime=0):
 # ---------------------------------------------------------------------------
 
 def collect_assets(config, work_dir):
-    """返回 {包规范名: (来源repo, 资产名, 下载url)}，去重保留版本最高。"""
-    want = {}
+    """返回 {'ipk': {包规范名: (来源repo, 资产名, url)}, 'apk': {资产名: (...)} }。
+
+    ipk 按包名去重保留版本最高；apk 先按资产名收集（构建时按 pkgname 去重）。
+    """
+    want = {"ipk": {}, "apk": {}}
     for plugin in config["plugins"]:
         repo = plugin["repo"]
-        regex = re.compile(plugin["asset_regex"])
         n = int(plugin.get("scan_releases", 1))
         url = f"https://api.github.com/repos/{repo}/releases?per_page={n}"
         try:
@@ -192,18 +309,20 @@ def collect_assets(config, work_dir):
             print(f"[warn] 拉取 {repo} releases 失败: {e}", file=sys.stderr)
             continue
         releases = json.loads(data)
+        aprx = plugin.get("apk_regex")
         for rel in releases:
             for asset in rel.get("assets", []):
                 name = asset["name"]
-                if not name.endswith(".ipk"):
-                    continue
-                if not regex.match(name):
-                    continue
-                stem = package_stem(name)
-                # 版本越高，文件名排序越靠后；保留字符串排序最高者
-                if stem in want and want[stem][1] >= name:
-                    continue
-                want[stem] = (plugin["name"], name, asset["browser_download_url"])
+                if name.endswith(".ipk") and re.match(plugin["asset_regex"], name):
+                    stem = package_stem(name)
+                    cur = want["ipk"].get(stem)
+                    if cur and cur[1] >= name:
+                        continue
+                    want["ipk"][stem] = (plugin["name"], name, asset["browser_download_url"])
+                elif name.endswith(".apk") and aprx and re.match(aprx, name):
+                    # 资产名唯一即可；构建时按 pkgname 去重
+                    if name not in want["apk"]:
+                        want["apk"][name] = (plugin["name"], name, asset["browser_download_url"])
     return want
 
 
@@ -211,25 +330,29 @@ def build(config, work_dir, out_dir):
     all_dir = os.path.join(out_dir, "all")
     os.makedirs(all_dir, exist_ok=True)
 
-    # 1) 收集并下载
+    # 1) 收集并下载 ipk + apk
     assets = collect_assets(config, work_dir)
     os.makedirs(work_dir, exist_ok=True)
-    downloaded = []  # (plugin, filename, abspath)
-    for stem, (plugin, name, url) in assets.items():
-        dest = os.path.join(work_dir, name)
-        if not os.path.exists(dest) or os.path.getsize(dest) == 0:
-            try:
-                download(url, dest)
-            except Exception as e:
-                print(f"[warn] 下载 {name} 失败: {e}", file=sys.stderr)
-                continue
-        downloaded.append((plugin, name, dest))
-    if not downloaded:
+    ipk_files = []  # (plugin, filename, abspath)
+    apk_files = []  # (plugin, filename, abspath)
+    for kind, dest_list in (("ipk", ipk_files), ("apk", apk_files)):
+        for stem, (plugin, name, url) in assets[kind].items():
+            dest = os.path.join(work_dir, name)
+            if not os.path.exists(dest) or os.path.getsize(dest) == 0:
+                try:
+                    download(url, dest)
+                except Exception as e:
+                    print(f"[warn] 下载 {name} 失败: {e}", file=sys.stderr)
+                    continue
+            dest_list.append((plugin, name, dest))
+    if not ipk_files:
         raise SystemExit("没有任何 ipk 下载成功，停止构建。")
+    if not apk_files:
+        print("[warn] 没有收集到 apk 资产，本次仅构建 opkg 源。", file=sys.stderr)
 
-    # 2) 解析每个 ipk，收集 (字段行, 架构, 文件名)；Filename 按目录单独追加
+    # 2) 解析每个 ipk -> opkg 条目；Filename 按目录单独追加
     entries = {}  # pkg_name -> (lines_without_filename, arch, filename)
-    for plugin, filename, abspath in downloaded:
+    for plugin, filename, abspath in ipk_files:
         fields, _ = extract_control(abspath)
         pkg_name = dict(fields).get("Package")
         if not pkg_name:
@@ -250,7 +373,7 @@ def build(config, work_dir, out_dir):
     order = sorted(entries)
 
     def blocks_for(arch):
-        """给定架构的索引块：all 包 + 本架构专用包，Filename 用纯文件名。"""
+        """给定架构的 opkg 索引块：all 包 + 本架构专用包，Filename 用纯文件名。"""
         out = []
         for pkg in order:
             lines, parch, filename = entries[pkg]
@@ -259,39 +382,50 @@ def build(config, work_dir, out_dir):
         return out
 
     def mirror_into(dir_path, keep):
-        """把 ipk 复制进 dir_path，并清理该目录内本次未生成的过期 ipk。"""
+        """把 ipk/apk 复制进 dir_path，并清理该目录内本次未生成的过期 ipk/apk。"""
         os.makedirs(dir_path, exist_ok=True)
         keep = set(keep)
         for old in os.listdir(dir_path):
-            if old.endswith(".ipk") and old not in keep:
+            if old.endswith((".ipk", ".apk")) and old not in keep:
                 os.remove(os.path.join(dir_path, old))
 
-    # 3) all/ 目录：存放全部 all 架构 ipk（供 all 源使用）
+    # 3) all/ 目录：存放全部 all 架构 ipk + apk（供 all 源使用）
     all_ipks = []
     for pkg in order:
         lines, parch, filename = entries[pkg]
         if parch == "all":
             shutil.copy2(os.path.join(work_dir, filename), os.path.join(all_dir, filename))
             all_ipks.append(filename)
-    mirror_into(all_dir, all_ipks)
+    apk_names = []
+    for plugin, filename, abspath in apk_files:
+        shutil.copy2(os.path.join(work_dir, filename), os.path.join(all_dir, filename))
+        apk_names.append(filename)
+    mirror_into(all_dir, all_ipks + apk_names)
     write_index(os.path.join(all_dir, "Packages"), blocks_for("all"))
+    # 注：apk 的 APKINDEX.tar.gz 由 CI 中的 apk-tools v3 生成（可同时索引 v2+v3 包），
+    # 见 .github/workflows/update-feed.yml 的 "Generate apk index" 步骤。
 
-    # 4) 每个目标架构目录：镜像 all 架构 ipk + 本架构专用 ipk，并写索引
+    # 4) 每个目标架构目录：镜像 ipk + apk，并写 opkg 索引与 apk 索引
     for arch in config.get("architectures", []):
         if arch == "all":
             continue
         arch_dir = os.path.join(out_dir, arch)
         os.makedirs(arch_dir, exist_ok=True)
-        arch_ipks = []
+        keep = []
         for pkg in order:
             lines, parch, filename = entries[pkg]
             if parch == "all" or parch == arch:
                 shutil.copy2(os.path.join(work_dir, filename), os.path.join(arch_dir, filename))
-                arch_ipks.append(filename)
-        mirror_into(arch_dir, arch_ipks)
+                keep.append(filename)
+        for plugin, filename, abspath in apk_files:
+            shutil.copy2(os.path.join(work_dir, filename), os.path.join(arch_dir, filename))
+            keep.append(filename)
+        mirror_into(arch_dir, keep)
         write_index(os.path.join(arch_dir, "Packages"), blocks_for(arch))
+        # apk 的 APKINDEX.tar.gz 由 CI 中 apk-tools v3 生成（覆盖 v2+v3 包）
 
-    print(f"构建完成：共 {len(entries)} 个包，all/ + {len(config.get('architectures',[]))-1} 个架构索引已生成于 {out_dir}")
+    print(f"构建完成：{len(entries)} 个 ipk、{len(apk_files)} 个 apk，all/ + "
+          f"{len(config.get('architectures', [])) - 1} 个架构目录已生成于 {out_dir}")
     return entries
 
 
