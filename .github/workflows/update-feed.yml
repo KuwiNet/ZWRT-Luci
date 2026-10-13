@@ -57,7 +57,7 @@ jobs:
             for d in all aarch64_cortex-a53 x86_64 arm_cortex-a7; do
               echo "===== $d ====="
               ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }
-              ( cd /dist/$d && apk index --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )
+              ( cd /dist/$d && apk index --allow-untrusted --output APKINDEX.tar.gz --description "ZWRT opkg feed" ./*.apk 2>&1 | tail -30 )
               if [ -f /dist/$d/APKINDEX.tar.gz ]; then echo "index OK $d"; else echo "INDEX MISSING $d"; failed=1; fi
               echo "--- files in $d ---"
               ls -la /dist/$d
