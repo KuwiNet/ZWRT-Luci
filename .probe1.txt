@@ -1,0 +1,84 @@
+﻿Package: luci-app-5gmodem
+Version: 3.4.0-r1
+Depends: libc, sms-tool, comgt, kmod-usb-serial, kmod-usb-serial-option, kmod-usb-serial-qualcomm, qmi-utils, modemmanager, luci-proto-mbim, luci-proto-qmi, luci-proto-modemmanager, kmod-usb-net-rndis, kmod-usb-net-cdc-ether, kmod-usb-net-cdc-mbim, kmod-usb-net-qmi-wwan, usb-modeswitch, kmod-usb-acm, curl, coreutils-stty, mbim-utils
+Source: /feed/luci-app-5gmodem
+SourceName: luci-app-5gmodem
+Section: luci
+SourceDateEpoch: 1784877710
+URL: https://github.com/openwrt/luci
+Maintainer: OpenWrt LuCI community
+Architecture: all
+Installed-Size: 5580800
+Description: LuCI interface for modems: connection info, diagnostics, SMS, USSD codes and AT commands. Optional eSIM (eUICC) profile management when the lpac package is installed.
+Size: 1543592
+MD5Sum: 043fa825a3c8ab73ebb583003f2c10df
+SHA256sum: 5edfefc8df01edfecad7ba34dac86107022815b81b53b4ea45923b2c3261b877
+Installed-Size: 5580800
+Filename: luci-app-5gmodem_3.4.0-r1_all.ipk
+
+Package: luci-app-afrp
+Version: 1.1.8
+Depends: luci-base, uclient-fetch, ca-bundle, frpc
+SourceName: luci-app-afrp
+License: MIT
+Section: luci
+Architecture: all
+Installed-Size: 59
+Maintainer: AFRP <https://www.afrp.net>
+Description: AFRP NAT traversal support and management by afrp.net.
+Size: 18349
+MD5Sum: 9c8fa9d5862e52c36d2b13065c8d5e5b
+SHA256sum: 6227f460d9145b6f4cc9e996cbe082fd2c54b51921a7e9e335bae6d4e884dbae
+Installed-Size: 59
+Filename: luci-app-afrp_1.1.8_all.ipk
+
+Package: luci-i18n-5gmodem-zh-cn
+Version: 0.261013.56581
+Depends: libc, luci-app-5gmodem
+Source: /feed/luci-app-5gmodem
+SourceName: luci-app-5gmodem
+Section: luci
+SourceDateEpoch: 1784877710
+Architecture: all
+Installed-Size: 122880
+Description: Translation for luci-app-5gmodem - 简体中文 (Simplified Chinese)
+Size: 48033
+MD5Sum: e340d94c7de7e1ef2421c8cde9794f64
+SHA256sum: 06aa7093f0bdbc89d5e8156bcb43b9bc8c5e20a45bbe0d8f54618be4236cebed
+Installed-Size: 122880
+Filename: luci-i18n-5gmodem-zh-cn.ipk
+
+Package: luci-i18n-5gmodem-zh-tw
+Version: 0.261013.56581
+Depends: libc, luci-app-5gmodem
+Source: /feed/luci-app-5gmodem
+SourceName: luci-app-5gmodem
+Section: luci
+SourceDateEpoch: 1784877710
+Architecture: all
+Installed-Size: 122880
+Description: Translation for luci-app-5gmodem - 正體中文 (Traditional Chinese)
+Size: 48640
+MD5Sum: e986adb587cb1b7d6b83b44eae58e35d
+SHA256sum: 5441ac4dbfa4aab55e236c9c18634fcb74c7e63a4626e50ef220c046c3935ef6
+Installed-Size: 122880
+Filename: luci-i18n-5gmodem-zh-tw.ipk
+
+Package: luci-theme-zwrt
+Version: 3.5.10
+Depends: libc, luci-base, wget, curl, jsonfilter, luci-lua-runtime
+Source: package/luci-theme-zwrt
+SourceName: luci-theme-zwrt
+Section: luci
+SourceDateEpoch: 1699969091
+Maintainer: OpenWrt LuCI community
+Architecture: all
+Installed-Size: 11405511
+Description: ZWRT Theme by kuwi.net
+Size: 11407100
+MD5Sum: 0289e0d3866bcf3d2f5074f25836eefa
+SHA256sum: 6d73476adb1e80edf2f8c4d914f1fa460b61aa84c8fdebb9dd0875a4fc4e8bdb
+Installed-Size: 11405511
+Filename: luci-theme-zwrt_3.5.10_all.ipk
+
+HTTP=200 SIZE=2982
