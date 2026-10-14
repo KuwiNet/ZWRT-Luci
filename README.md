@@ -11,8 +11,10 @@
 | `luci-i18n-5gmodem-zh-cn` | 5gmodem 简体中文语言包 |
 | `luci-i18n-5gmodem-zh-tw` | 5gmodem 繁体中文语言包 |
 | `luci-app-afrp` | AFRP NAT 穿透客户端管理 |
+| `luci-app-nikki` | nikki 透明代理管理界面 |
+| `nikki` / `mihomo-meta` / `mihomo-alpha` | nikki 主程序与 Mihomo 内核（按架构编译） |
 
-> 插件会持续增加。源内所有包均为 `all` 架构，兼容绝大多数 OpenWrt 设备。
+> 插件会持续增加。大部分插件为 `all` 架构，兼容绝大多数 OpenWrt 设备；nikki 系列的主程序与 Mihomo 内核按具体架构编译，需使用与你设备对应的架构目录。
 
 ## 支持的架构
 
@@ -21,6 +23,7 @@
 - `x86_64`
 - `aarch64_cortex-a53`
 - `arm_cortex-a7`
+- `arm_cortex-a7_neon-vfpv4`（nikki 专用）
 
 > 如果你的路由器架构不在上述列表，可反馈补充，或自行确认架构后使用对应的索引目录。
 
@@ -42,13 +45,14 @@ opkg install luci-theme-zwrt
 opkg install luci-app-5gmodem
 opkg install luci-i18n-5gmodem-zh-cn
 opkg install luci-app-afrp
+opkg install luci-app-nikki
 ```
 
 也可以只更新索引、在 LuCI 界面（系统 → 软件包）里搜索并安装。
 
 ## 使用方法（apk，OpenWrt 25.12+ / apk-tools v3）
 
-添加 apk 源（架构同上），其中 `luci-app-5gmodem`、`luci-i18n-5gmodem-zh-cn`、`luci-i18n-5gmodem-zh-tw`、`luci-theme-zwrt` 提供 apk 包；`luci-app-afrp` 目前只提供 ipk。
+添加 apk 源（架构同上）。上述插件均提供 apk 包（含 nikki 系列：架构目录内已含对应架构编译的 nikki 与 Mihomo apk）。
 
 ```
 https://luci.zwrt.de/packages/<架构>
@@ -56,7 +60,7 @@ https://luci.zwrt.de/packages/<架构>
 
 ```bash
 apk update
-apk add luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw luci-theme-zwrt
+apk add luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw luci-theme-zwrt luci-app-afrp luci-app-nikki
 ```
 
 ## 更新机制
