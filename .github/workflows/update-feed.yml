@@ -70,13 +70,14 @@ jobs:
       # 只认 APKINDEX.tar.gz、不认 packages.adb，故无法用 apk fetch 从源抓包（测试环境限制）。
       # 这里用两项有效检查把关：① adbdump 确认每个架构目录索引非空、② apk verify 确认每个 apk 数据完整。
       # 最终端到端以 OpenWrt 25.12+ 设备上 apk update/apk add 为准。
-      - name: Verify apk v3 feed (index has 5 packages + package integrity)
+      - name: Verify apk v3 feed (adbdump per-arch + apk verify integrity)
         run: |
           docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
             echo "== apk v3 feed verify (adbdump + apk verify) =="
             ok=1
-            for d in */; do
+            for d in /dist/*/; do
               d=${d%/}
+              d=${d#/dist/}
               echo "===== $d ====="
               test -f /dist/$d/packages.adb || { echo "NO packages.adb in $d"; ok=0; continue; }
               n=$(apk adbdump /dist/$d/packages.adb 2>/dev/null | grep -cE "^[[:space:]]*-[[:space:]]*name:" || true)
