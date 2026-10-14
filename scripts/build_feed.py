@@ -297,6 +297,8 @@ def collect_assets(config, work_dir):
     """
     want = {"ipk": {}, "apk": {}}
     for plugin in config["plugins"]:
+        if plugin.get("type") == "per_arch_tar":
+            continue  # 分架构 tar.gz 插件（如 nikki）由 collect_nikki_tar 单独处理
         repo = plugin["repo"]
         n = int(plugin.get("scan_releases", 1))
         url = f"https://api.github.com/repos/{repo}/releases?per_page={n}"
@@ -326,11 +328,78 @@ def collect_assets(config, work_dir):
     return want
 
 
+def collect_nikki_tar(config, work_dir):
+    """处理 type=per_arch_tar 的插件（nikki）：按架构下载 24.10(ipk)/25.12(apk) tar.gz 并解压。
+
+    返回 {arch: {"ipk": [(plugin, filename, abspath)], "apk": [...]}}。
+    tar.gz 内 ipk/apk 解压到 work/nikki/<arch>/。
+    """
+    result = {}
+    for plugin in config["plugins"]:
+        if plugin.get("type") != "per_arch_tar":
+            continue
+        repo = plugin["repo"]
+        url = f"https://api.github.com/repos/{repo}/releases?per_page={plugin.get('scan_releases', 1)}"
+        try:
+            data = json.loads(api_get(url))
+        except Exception as e:
+            print(f"[warn] 拉取 {repo} releases 失败: {e}", file=sys.stderr)
+            continue
+        asset_urls = {}
+        for rel in data:
+            for a in rel.get("assets", []):
+                asset_urls[a["name"]] = a["browser_download_url"]
+        for arch in plugin.get("archs", []):
+            iarch = {"ipk": [], "apk": []}
+            for kind, pat_key, ext in (("ipk", "ipk_pattern", ".ipk"),
+                                       ("apk", "apk_pattern", ".apk")):
+                pat = plugin.get(pat_key)
+                if not pat:
+                    continue
+                name = pat.format(arch=arch)
+                if name not in asset_urls:
+                    print(f"[warn] {name} 不存在于 {repo} release，跳过", file=sys.stderr)
+                    continue
+                tarpath = os.path.join(work_dir, "nikki_tar", name)
+                os.makedirs(os.path.dirname(tarpath), exist_ok=True)
+                if not os.path.exists(tarpath) or os.path.getsize(tarpath) == 0:
+                    try:
+                        download(asset_urls[name], tarpath)
+                    except Exception as e:
+                        print(f"[warn] 下载 {name} 失败: {e}", file=sys.stderr)
+                        continue
+                arch_work = os.path.join(work_dir, "nikki", arch)
+                os.makedirs(arch_work, exist_ok=True)
+                try:
+                    with tarfile.open(tarpath, "r:gz") as tf:
+                        for m in tf.getmembers():
+                            if not m.isfile():
+                                continue
+                            fn = os.path.basename(m.name)
+                            if not fn.endswith(ext):
+                                continue
+                            dest = os.path.join(arch_work, fn)
+                            with open(dest, "wb") as fh:
+                                fh.write(tf.extractfile(m).read())
+                            if kind == "apk":
+                                # nikki 的 luci-app/i18n 是 noarch(all)，主程序/内核按来源架构编译
+                                aarch = "all" if (fn.startswith("luci-app-nikki")
+                                                  or fn.startswith("luci-i18n-nikki")) else arch
+                                iarch["apk"].append((plugin["name"], fn, dest, aarch))
+                            else:
+                                iarch["ipk"].append((plugin["name"], fn, dest))
+                except Exception as e:
+                    print(f"[warn] 解压 {name} 失败: {e}", file=sys.stderr)
+                    continue
+            result[arch] = iarch
+    return result
+
+
 def build(config, work_dir, out_dir):
     all_dir = os.path.join(out_dir, "all")
     os.makedirs(all_dir, exist_ok=True)
 
-    # 1) 收集并下载 ipk + apk
+    # 1) 收集并下载普通插件（all 包）的 ipk + apk
     assets = collect_assets(config, work_dir)
     os.makedirs(work_dir, exist_ok=True)
     ipk_files = []  # (plugin, filename, abspath)
@@ -347,17 +416,24 @@ def build(config, work_dir, out_dir):
             dest_list.append((plugin, name, dest))
     if not ipk_files:
         raise SystemExit("没有任何 ipk 下载成功，停止构建。")
-    if not apk_files:
-        print("[warn] 没有收集到 apk 资产，本次仅构建 opkg 源。", file=sys.stderr)
 
-    # 2) 解析每个 ipk -> opkg 条目；Filename 按目录单独追加
-    entries = {}  # pkg_name -> (lines_without_filename, arch, filename)
-    for plugin, filename, abspath in ipk_files:
+    # 2) nikki：分架构 tar.gz 下载并解压
+    nikki = collect_nikki_tar(config, work_dir)
+    nikki_ipks, nikki_apks = [], []
+    for arch, d in nikki.items():
+        nikki_ipks += d["ipk"]
+        nikki_apks += d["apk"]
+
+    # 3) 解析每个 ipk -> entries[(pkg, arch)] = (lines, arch, abspath)
+    #    用 (pkg, arch) 作 key：nikki 各架构主程序同名不同架构不会互相覆盖。
+    entries = {}
+
+    def add_ipk(filename, abspath):
         fields, _ = extract_control(abspath)
         pkg_name = dict(fields).get("Package")
         if not pkg_name:
             print(f"[warn] {filename} 缺少 Package 字段，跳过", file=sys.stderr)
-            continue
+            return
         arch = dict(fields).get("Architecture", "all")
         size = os.path.getsize(abspath)
         inst = dict(fields).get("Installed-Size")
@@ -368,17 +444,22 @@ def build(config, work_dir, out_dir):
         lines.append(f"MD5Sum: {md5_file(abspath)}")
         lines.append(f"SHA256sum: {sha256_file(abspath)}")
         lines.append(f"Installed-Size: {inst}")
-        entries[pkg_name] = (lines, arch, filename)
+        entries[(pkg_name, arch)] = (lines, arch, abspath)
 
-    order = sorted(entries)
+    for plugin, filename, abspath in ipk_files:
+        add_ipk(filename, abspath)
+    for plugin, filename, abspath in nikki_ipks:
+        add_ipk(filename, abspath)
+
+    order = sorted(entries.keys())
 
     def blocks_for(arch):
         """给定架构的 opkg 索引块：all 包 + 本架构专用包，Filename 用纯文件名。"""
         out = []
-        for pkg in order:
-            lines, parch, filename = entries[pkg]
+        for key in order:
+            lines, parch, abspath = entries[key]
             if parch == "all" or parch == arch:
-                out.append("\n".join(lines + [f"Filename: {filename}"]))
+                out.append("\n".join(lines + [f"Filename: {os.path.basename(abspath)}"]))
         return out
 
     def mirror_into(dir_path, keep):
@@ -389,43 +470,56 @@ def build(config, work_dir, out_dir):
             if old.endswith((".ipk", ".apk")) and old not in keep:
                 os.remove(os.path.join(dir_path, old))
 
-    # 3) all/ 目录：存放全部 all 架构 ipk + apk（供 all 源使用）
-    all_ipks = []
-    for pkg in order:
-        lines, parch, filename = entries[pkg]
-        if parch == "all":
-            shutil.copy2(os.path.join(work_dir, filename), os.path.join(all_dir, filename))
-            all_ipks.append(filename)
-    apk_names = []
-    for plugin, filename, abspath in apk_files:
-        shutil.copy2(os.path.join(work_dir, filename), os.path.join(all_dir, filename))
-        apk_names.append(filename)
-    mirror_into(all_dir, all_ipks + apk_names)
-    write_index(os.path.join(all_dir, "Packages"), blocks_for("all"))
-    # 注：apk 的 APKINDEX.tar.gz 由 CI 中的 apk-tools v3 生成（可同时索引 v2+v3 包），
-    # 见 .github/workflows/update-feed.yml 的 "Generate apk index" 步骤。
+    # 4) apk 分档：all apk 镜像进所有目录；分架构 apk 只进对应架构目录
+    #    现有插件 apk 均 noarch(all)；nikki 的 apk 架构在解压时已按来源架构+包名判定
+    #    （python 侧不解析 v3 apk 的 .PKGINFO，避免 ADBd 魔数头解析不可靠）
+    all_apk = [(name, abspath) for plugin, name, abspath in apk_files]
+    arch_apk = {}
+    for plugin, name, abspath, aarch in nikki_apks:
+        if aarch == "all":
+            all_apk.append((name, abspath))
+        else:
+            arch_apk.setdefault(aarch, []).append((name, abspath))
 
-    # 4) 每个目标架构目录：镜像 ipk + apk，并写 opkg 索引与 apk 索引
+    # 5) all/ 目录：全部 all 架构 ipk + all apk
+    all_ipks = []
+    for key in order:
+        lines, parch, abspath = entries[key]
+        if parch == "all":
+            shutil.copy2(abspath, os.path.join(all_dir, os.path.basename(abspath)))
+            all_ipks.append(os.path.basename(abspath))
+    all_apk_names = [n for n, _ in all_apk]
+    for n, abspath in all_apk:
+        shutil.copy2(abspath, os.path.join(all_dir, n))
+    mirror_into(all_dir, all_ipks + all_apk_names)
+    write_index(os.path.join(all_dir, "Packages"), blocks_for("all"))
+    # apk 的 packages.adb 由 CI 中 apk-tools v3 生成
+
+    # 6) 每个架构目录：all 包镜像 + 本架构 ipk + all apk + 本架构 apk
     for arch in config.get("architectures", []):
         if arch == "all":
             continue
         arch_dir = os.path.join(out_dir, arch)
         os.makedirs(arch_dir, exist_ok=True)
         keep = []
-        for pkg in order:
-            lines, parch, filename = entries[pkg]
+        for key in order:
+            lines, parch, abspath = entries[key]
             if parch == "all" or parch == arch:
-                shutil.copy2(os.path.join(work_dir, filename), os.path.join(arch_dir, filename))
-                keep.append(filename)
-        for plugin, filename, abspath in apk_files:
-            shutil.copy2(os.path.join(work_dir, filename), os.path.join(arch_dir, filename))
-            keep.append(filename)
+                shutil.copy2(abspath, os.path.join(arch_dir, os.path.basename(abspath)))
+                keep.append(os.path.basename(abspath))
+        for n, abspath in all_apk:
+            shutil.copy2(abspath, os.path.join(arch_dir, n))
+            keep.append(n)
+        for n, abspath in arch_apk.get(arch, []):
+            shutil.copy2(abspath, os.path.join(arch_dir, n))
+            keep.append(n)
         mirror_into(arch_dir, keep)
         write_index(os.path.join(arch_dir, "Packages"), blocks_for(arch))
-        # apk 的 APKINDEX.tar.gz 由 CI 中 apk-tools v3 生成（覆盖 v2+v3 包）
+        # apk 的 packages.adb 由 CI 中 apk-tools v3 生成
 
-    print(f"构建完成：{len(entries)} 个 ipk、{len(apk_files)} 个 apk，all/ + "
-          f"{len(config.get('architectures', [])) - 1} 个架构目录已生成于 {out_dir}")
+    print(f"构建完成：{len(entries)} 个 ipk（含 nikki {len(nikki_ipks)}）、"
+          f"apk {len(all_apk)}（all）+ {sum(len(v) for v in arch_apk.values())}（分架构），"
+          f"all/ + {len(config.get('architectures', [])) - 1} 个架构目录已生成于 {out_dir}")
     return entries
 
 
