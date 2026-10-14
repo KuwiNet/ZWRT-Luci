@@ -1,4 +1,4 @@
-# ZWRT-opkg — OpenWrt 插件源
+# ZWRT-Luci — OpenWrt 插件源
 
 一个面向 OpenWrt 用户的在线插件源，托管在 `https://luci.zwrt.de`。定时从上游仓库同步更新，路由器配置后即可安装，无需手动下载。同时提供 **opkg/ipk** 和 **apk** 两种格式的源（目录布局与 OpenWrt 官方一致）。
 
