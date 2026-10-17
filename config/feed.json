@@ -21,15 +21,6 @@
       "asset_regex": "^luci-app-afrp_[0-9].*\\.ipk$",
       "apk_regex": "^luci-app-afrp-[0-9].*\\.apk$",
       "scan_releases": 1
-    },
-    {
-      "name": "nikki",
-      "repo": "nikkinikki-org/OpenWrt-nikki",
-      "type": "per_arch_tar",
-      "archs": ["x86_64", "aarch64_cortex-a53", "arm_cortex-a7_neon-vfpv4"],
-      "ipk_pattern": "nikki_{arch}-openwrt-24.10.tar.gz",
-      "apk_pattern": "nikki_{arch}-openwrt-25.12.tar.gz",
-      "scan_releases": 1
     }
   ]
 }
