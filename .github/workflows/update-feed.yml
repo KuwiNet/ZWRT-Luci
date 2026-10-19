@@ -114,6 +114,25 @@ jobs:
             --checkers 8 \
             --log-level INFO
 
+      # 双推：构建产物同时 rsync 到 VPS 备用源（mirror.zwrt.de）。
+      # 需先在仓库配置 5 个 secret（VPS_HOST / VPS_PORT / VPS_USER / VPS_SSH_KEY / VPS_PATH），
+      # 并在 VPS 上装 rsync、建好目录、把 VPS_SSH_KEY 对应的公钥加入 authorized_keys。
+      # 未配置 VPS_HOST 时整个步骤自动跳过，不影响 R2 主源同步。
+      - name: Sync dist -> VPS via rsync (备用源)
+        if: ${{ secrets.VPS_HOST != '' }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_vps
+          chmod 600 ~/.ssh/id_vps
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_vps -p ${VPS_PORT:-22} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            dist/ "${VPS_USER}@${VPS_HOST}:${VPS_PATH}/packages/"
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+
       - name: Build summary
         if: always()
         run: |
