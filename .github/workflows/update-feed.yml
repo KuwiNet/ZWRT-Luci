@@ -1,12 +1,12 @@
 name: Build & Sync OpenWrt opkg Feed
 
 # 触发方式：
-#  1) 定时（默认每天 03:17 UTC 一次，可自行调整 cron）
+#  1) 定时（默认每天 03:00 北京时间 = 前一日 19:00 UTC，可自行调整 cron）
 #  2) 手动（GitHub 页面点 Run workflow）
 #  3) 修改 config/ 或 scripts/ 时自动触发
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '0 19 * * *'
   workflow_dispatch:
   push:
     paths:
