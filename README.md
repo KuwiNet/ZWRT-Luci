@@ -11,7 +11,7 @@
 
 | 插件 | 说明 |
 | --- | --- |
-| `luci-theme-zwrt` | ZWRT 主题（kuwi.net） |
+| `luci-theme-zwrt` | ZWRT 主题 |
 | `luci-app-5gmodem` | 5G/4G 上网卡管理 |
 | `luci-i18n-5gmodem-zh-cn` | 5gmodem 简体中文语言包 |
 | `luci-i18n-5gmodem-zh-tw` | 5gmodem 繁体中文语言包 |
