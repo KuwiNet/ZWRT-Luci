@@ -114,7 +114,7 @@ jobs:
             --checkers 8 \
             --log-level INFO
 
-      # 双推：构建产物同时 rsync 到 VPS 备用源（mirror.zwrt.de）。
+      # 双推：构建产物同时 rsync 到 VPS 备用源（mirror.zwrt.cc）。
       # 需先在仓库配置 5 个 secret（VPS_HOST / VPS_PORT / VPS_USER / VPS_SSH_KEY / VPS_PATH），
       # 并在 VPS 上装 rsync、建好目录、把 VPS_SSH_KEY 对应的公钥加入 authorized_keys。
       # 通过 env 传入 secrets（不能直接在 if: 里引用 secrets，否则 workflow 解析失败），

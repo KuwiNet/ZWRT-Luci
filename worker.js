@@ -6,14 +6,14 @@
 //   packages/<arch>/*.ipk / *.apk
 //
 // 部署后：
-//   自定义域名（推荐） https://luci.zwrt.de/packages/<arch>/Packages
+//   自定义域名（推荐） https://luci.zwrt.cc/packages/<arch>/Packages
 //   或默认 https://<worker>.workers.dev/packages/<arch>/Packages
 //
 // 路由器侧 opkg.conf 添加（opkg/ipk）：
-//   src/gz zwrt https://luci.zwrt.de/packages/<arch>
+//   src/gz zwrt https://luci.zwrt.cc/packages/<arch>
 //   （<arch> 替换为你的路由器架构，如 x86_64 / aarch64_cortex-a53）
 // 路由器侧 apk 源（apk-tools v3，OpenWrt 25.12+）：
-//   https://luci.zwrt.de/packages/<arch>
+//   https://luci.zwrt.cc/packages/<arch>
 
 export default {
   async fetch(request, env) {
