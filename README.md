@@ -53,16 +53,33 @@ opkg install luci-app-afrp
 
 ## 使用方法（apk，OpenWrt 25.12+ / apk-tools v3）
 
-添加 apk 源（架构同上）。上述插件均提供 apk 包。
+apk 的源配置写在 `/etc/apk/repositories.d/` 下（不是 `/etc/apk/repositories`），**每一行都必须直接指向 `packages.adb` 文件本身**。如果写成目录，apk 会按旧格式去找 `APKINDEX.tar.gz`，报 `unexpected end of file`。
 
-```
-https://mirror.zwrt.cc/packages/<架构>
-```
+**1）导入签名公钥**（一次性，长期有效）
 
 ```bash
-apk update
-apk add luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw luci-theme-zwrt luci-app-afrp
+mkdir -p /etc/apk/keys
+wget -O /etc/apk/keys/zwrt-feed.pem https://mirror.zwrt.cc/packages/zwrt-feed.pem
 ```
+
+**2）添加源并更新索引**
+
+```bash
+mkdir -p /etc/apk/repositories.d
+echo "https://mirror.zwrt.cc/packages/all/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
+apk update
+```
+
+**3）安装**
+
+```bash
+apk add luci-theme-zwrt luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw luci-app-afrp
+```
+
+> 系统升级（sysupgrade）会清掉 `/etc/apk/keys` 里的自定义公钥，建议把它加入备份清单：
+> `echo /etc/apk/keys/zwrt-feed.pem >> /etc/sysupgrade.conf`
+
+源内所有包都是 `all` 架构，因此任何架构都只需要上面这一行 `packages/all/packages.adb`，不用按架构区分。
 
 ## 更新机制
 
@@ -72,6 +89,9 @@ apk add luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmodem-zh-tw luci-th
 
 **更新索引报 404？**
 大概率是架构目录名写错。先 `opkg print-architecture`（apk 用 `apk arch`）确认真实架构，再核对源地址里 `<架构>` 是否一致。
+
+**apk update 报 `UNTRUSTED signature`？**
+说明设备上没有导入本源的签名公钥，或系统升级后公钥丢失。重新执行 apk 章节的第 1 步导入 `zwrt-feed.pem`，并确认 `https://mirror.zwrt.cc/packages/zwrt-feed.pem` 能打开。
 
 **源里的包装不上？**
 个别插件可能依赖其他软件包（如 `luci-app-afrp` 依赖 `frpc`）。若更新成功但安装报缺依赖，先确认官方源正常、再重试安装。

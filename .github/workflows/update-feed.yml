@@ -49,16 +49,34 @@ jobs:
       # apk 源的 v3 索引（packages.adb）必须用 apk-tools v3 的 mkndx 生成——
       # 它才能同时正确处理 v2(afrp) 与 v3(5gmodem/zwrt) 包并算出正确校验和。
       # 这里用 Docker 跑 Alpine(latest-stable, 自带 apk-tools 3.x)。
+      #
+      # OpenWrt 25.12+ 的 apk 对索引强制验签，未签名索引会报 UNTRUSTED signature，
+      # 故用长期密钥（secret APK_SIGN_KEY，对应仓库内公钥 zwrt-feed.pem）对索引签名。
+      - name: Prepare apk signing key
+        env:
+          APK_SIGN_KEY: ${{ secrets.APK_SIGN_KEY }}
+        run: |
+          mkdir -p signing
+          if [ -z "${APK_SIGN_KEY}" ]; then
+            echo "::warning::APK_SIGN_KEY 未配置，索引将不带签名（OpenWrt 25.12 会报 UNTRUSTED signature）"
+            exit 0
+          fi
+          printf '%s\n' "${APK_SIGN_KEY}" > signing/zwrt-feed.key
+          chmod 600 signing/zwrt-feed.key
+          echo "signing key ready: $(wc -c < signing/zwrt-feed.key) bytes"
+
       - name: Generate apk v3 index (packages.adb) via apk mkndx
         run: |
-          docker run --rm -v "$(pwd)/dist:/dist" -w /dist alpine:latest sh -lc '
+          docker run --rm -v "$(pwd)/dist:/dist" -v "$(pwd)/signing:/signing" -w /dist alpine:latest sh -lc '
             echo "apk version: $(apk --version)"
+            if [ -f /signing/zwrt-feed.key ]; then sign="--sign /signing/zwrt-feed.key"; else sign=""; fi
+            echo "sign flag: ${sign:-<none>}"
             failed=0
             for d in */; do
               d=${d%/}
               echo "===== $d ====="
               ls /dist/$d/*.apk 2>/dev/null || { echo "no apk in $d"; continue; }
-              ( cd /dist/$d && apk mkndx --allow-untrusted -o packages.adb ./*.apk 2>&1 | tail -30 )
+              ( cd /dist/$d && apk mkndx --allow-untrusted $sign -o packages.adb ./*.apk 2>&1 | tail -30 )
               if [ -f /dist/$d/packages.adb ]; then echo "mkndx OK $d"; else echo "MKNDX MISSING $d"; failed=1; fi
               echo "--- files in $d ---"
               ls -la /dist/$d
@@ -72,7 +90,7 @@ jobs:
       # 最终端到端以 OpenWrt 25.12+ 设备上 apk update/apk add 为准。
       - name: Verify apk v3 feed (adbdump per-arch + apk verify integrity)
         run: |
-          docker run --rm -v "$(pwd)/dist:/dist" -w /tmp alpine:latest sh -lc '
+          docker run --rm -v "$(pwd)/dist:/dist" -v "$(pwd)/signing:/signing:ro" -w /tmp alpine:latest sh -lc '
             echo "== apk v3 feed verify (adbdump + apk verify) =="
             ok=1
             for d in /dist/*/; do
@@ -80,6 +98,11 @@ jobs:
               d=${d#/dist/}
               echo "===== $d ====="
               test -f /dist/$d/packages.adb || { echo "NO packages.adb in $d"; ok=0; continue; }
+              if [ -f /signing/zwrt-feed.pem ]; then
+                apk adbdump /dist/$d/packages.adb 2>/dev/null | grep -qi "signature" \
+                  && echo "$d: index is signed" \
+                  || { echo "UNSIGNED index in $d <<<"; ok=0; }
+              fi
               n=$(apk adbdump /dist/$d/packages.adb 2>/dev/null | grep -cE "^[[:space:]]*-[[:space:]]*name:" || true)
               echo "$d: $n packages indexed"
               [ "$n" -gt 0 ] || { echo "EMPTY index in $d <<<"; ok=0; }
@@ -90,6 +113,11 @@ jobs:
             done
             [ "$ok" = 1 ] && echo "== APK V3 FEED VERIFIED ==" || { echo "== APK V3 FEED HAS PROBLEMS, ABORT BEFORE SYNC =="; exit 1; }
           '
+
+      - name: Publish feed public key into dist
+        run: |
+          cp zwrt-feed.pem dist/zwrt-feed.pem
+          ls -la dist/zwrt-feed.pem
 
       - name: Install rclone
         run: |
