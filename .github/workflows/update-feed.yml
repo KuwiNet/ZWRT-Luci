@@ -80,9 +80,14 @@ jobs:
               d=${d%/}
               for f in /dist/$d/*.apk; do
                 [ -f "$f" ] || continue
-                nm=$(apk adbdump "$f" 2>/dev/null | grep -m1 "^name:" | cut -d" " -f2)
-                vr=$(apk adbdump "$f" 2>/dev/null | grep -m1 "^version:" | cut -d" " -f2)
-                [ -n "$nm" ] && [ -n "$vr" ] || { echo "WARN cannot read name/version: $f"; continue; }
+                dbg=$(apk adbdump "$f" 2>&1 | head -12)
+                nm=$(printf '%s\n' "$dbg" | sed -nE 's/^[[:space:]]*-?[[:space:]]*name:[[:space:]]*(.*)$/\1/p' | head -1)
+                vr=$(printf '%s\n' "$dbg" | sed -nE 's/^[[:space:]]*-?[[:space:]]*version:[[:space:]]*(.*)$/\1/p' | head -1)
+                if [ -z "$nm" ] || [ -z "$vr" ]; then
+                  echo "WARN cannot read name/version: $f"
+                  printf '%s\n' "$dbg" | sed 's/^/    adbdump| /'
+                  continue
+                fi
                 want="$nm-$vr.apk"
                 if [ "$(basename "$f")" != "$want" ]; then
                   mv "$f" "/dist/$d/$want"
@@ -128,8 +133,8 @@ jobs:
               echo "--- apk verify --allow-untrusted each package ---"
               for f in /dist/$d/*.apk; do
                 apk verify --allow-untrusted "$f" >/dev/null 2>&1 && echo "OK  $(basename $f)" || { echo "FAIL $(basename $f) <<<"; ok=0; }
-                nm=$(apk adbdump "$f" 2>/dev/null | grep -m1 "^name:" | cut -d" " -f2)
-                vr=$(apk adbdump "$f" 2>/dev/null | grep -m1 "^version:" | cut -d" " -f2)
+                nm=$(apk adbdump "$f" 2>/dev/null | sed -nE 's/^[[:space:]]*-?[[:space:]]*name:[[:space:]]*(.*)$/\1/p' | head -1)
+                vr=$(apk adbdump "$f" 2>/dev/null | sed -nE 's/^[[:space:]]*-?[[:space:]]*version:[[:space:]]*(.*)$/\1/p' | head -1)
                 if [ -n "$nm" ] && [ -n "$vr" ] && [ "$(basename "$f")" != "$nm-$vr.apk" ]; then
                   echo "NAME MISMATCH $(basename $f) should be $nm-$vr.apk <<<"; ok=0
                 fi
