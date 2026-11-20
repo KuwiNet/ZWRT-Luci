@@ -1,5 +1,5 @@
 {
-  "architectures": ["all", "x86_64", "aarch64_cortex-a53", "arm_cortex-a7", "arm_cortex-a7_neon-vfpv4"],
+  "architectures": ["all", "x86_64", "aarch64_cortex-a53", "arm_cortex-a7_neon-vfpv4"],
   "plugins": [
     {
       "name": "zwrt",
