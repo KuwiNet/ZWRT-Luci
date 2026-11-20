@@ -116,9 +116,12 @@ def main():
             bin_size = os.path.getsize(bin_path)
             log("  gz=%d B, binary=%d B" % (dl, bin_size))
 
-            root = os.path.join(work, "root")
+            # One buildroot per arch and never delete it from the host: after the
+            # container chowns it to root, the runner user cannot remove it.
+            safe = re.sub(r"[^0-9A-Za-z_.-]", "_", arch)
+            root = os.path.join(work, "root-" + safe)
             if os.path.isdir(root):
-                shutil.rmtree(root)
+                root = root + "-1"
             os.makedirs(os.path.join(root, "usr/bin"))
             os.makedirs(os.path.join(root, "etc/init.d"))
             os.makedirs(os.path.join(root, "etc/config"))
@@ -139,9 +142,7 @@ def main():
                 f.write("Place your mihomo config.yaml in this directory.\n")
             os.chmod(os.path.join(root, "etc/mihomo/README"), 0o644)
 
-            out_apk = os.path.join(work, "%s-%s.apk" % (name, pkgver))
-            if os.path.exists(out_apk):
-                os.remove(out_apk)
+            out_apk = os.path.join(work, "out-%s.apk" % safe)
 
             cmd = [
                 "docker", "run", "--rm",
@@ -150,16 +151,16 @@ def main():
                 " && ".join([
                     # files are staged by the runner uid; normalize ownership to root
                     # inside the container so mkpkg records root:root instead of nobody
-                    "chown -R 0:0 /work/root",
-                    "apk mkpkg --compat 3.0.0_pre1 -F /work/root"
+                    "chown -R 0:0 /work/root-%s" % safe,
+                    "apk mkpkg --compat 3.0.0_pre1 -F /work/root-%s" % safe +
                     " -I name:%s -I version:%s" % (name, pkgver) +
                     " -I description:%s -I arch:%s" % (json.dumps(desc), arch) +
                     " -I license:%s -I origin:%s" % (license_, name) +
                     " -I maintainer:%s -I url:%s" % (cfg.get("maintainer", "ZWRT"), url) +
                     ' -I "depends:%s"' % " ".join(depends) +
-                    " -o /work/%s-%s.apk" % (name, pkgver),
-                    "apk verify --allow-untrusted /work/%s-%s.apk" % (name, pkgver),
-                    "apk adbdump /work/%s-%s.apk" % (name, pkgver) + " | head -20",
+                    " -o /work/out-%s.apk" % safe,
+                    "apk verify --allow-untrusted /work/out-%s.apk" % safe,
+                    "apk adbdump /work/out-%s.apk" % safe + " | head -20",
                 ]),
             ]
             log("  running apk mkpkg for %s" % arch)
