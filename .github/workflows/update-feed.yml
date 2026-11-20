@@ -46,6 +46,15 @@ jobs:
           # 用 Actions 内置 token 访问 GitHub API（匿名会被限流 403）
           GH_TOKEN: ${{ github.token }}
 
+      # 上游 mihomo 只发裸二进制，没有 ipk/apk；这里按架构下载官方二进制并用
+      # apk-tools 3.x 的 mkpkg 现场打成 v3 apk，落进 dist/<arch>/ 供后面的 mkndx 索引。
+      - name: Package mihomo (upstream binary -> apk v3)
+        if: ${{ hashFiles('config/mihomo.json') != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/pack_mihomo.py --config config/mihomo.json --out dist
+
       # apk 源的 v3 索引（packages.adb）必须用 apk-tools v3 的 mkndx 生成——
       # 它才能同时正确处理 v2(afrp) 与 v3(5gmodem/zwrt) 包并算出正确校验和。
       # 这里用 Docker 跑 Alpine(latest-stable, 自带 apk-tools 3.x)。
