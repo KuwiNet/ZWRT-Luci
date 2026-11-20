@@ -158,6 +158,8 @@ def main():
                     " -I license:%s -I origin:%s" % (license_, name) +
                     " -I maintainer:%s -I url:%s" % (cfg.get("maintainer", "ZWRT"), url) +
                     ' -I "depends:%s"' % " ".join(depends) +
+                    (' -I "provides:%s"' % " ".join(cfg["provides"]) if cfg.get("provides") else "") +
+                    (' -I "replaces:%s"' % " ".join(cfg["replaces"]) if cfg.get("replaces") else "") +
                     " -o /work/out-%s.apk" % safe,
                     "apk verify --allow-untrusted /work/out-%s.apk" % safe,
                     "apk adbdump /work/out-%s.apk" % safe + " | head -20",
