@@ -26,7 +26,7 @@
 
 - `x86_64`
 - `aarch64_cortex-a53`
-- `arm_cortex-a7`
+- `arm_cortex-a7_neon-vfpv4`
 
 > 如果你的路由器架构不在上述列表，可反馈补充，或自行确认架构后使用对应的索引目录。
 
@@ -48,7 +48,10 @@ opkg install luci-theme-zwrt
 opkg install luci-app-5gmodem
 opkg install luci-i18n-5gmodem-zh-cn
 opkg install luci-app-afrp
+opkg install mihomo-meta
 ```
+
+> `mihomo-meta` 是内核二进制，按架构出包，用上面那条 `src/gz zwrt .../<架构>` 就能装到，不需要再加源。如果之前装的是 nikki 源里的 `mihomo-meta`，装本源的版本会直接覆盖同一个包名。
 
 也可以只更新索引、在 LuCI 界面（系统 → 软件包）里搜索并安装。
 
@@ -82,7 +85,7 @@ apk add luci-theme-zwrt luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmod
 > 系统升级（sysupgrade）会清掉 `/etc/apk/keys` 里的自定义公钥，建议把它加入备份清单：
 > `echo /etc/apk/keys/zwrt-feed.pem >> /etc/sysupgrade.conf`
 
-源内 `luci-*` 包都是 `all` 架构，所以第一行 `packages/all/packages.adb` 任何设备通用；`mihomo-meta` 这类内核包按架构出包（`x86_64`、`aarch64_cortex-a53`、`arm_cortex-a7`、`arm_cortex-a7_neon-vfpv4`），必须再加一行指向你自己架构的 `packages.adb`，否则在软件包列表里看不到它。
+源内 `luci-*` 包都是 `all` 架构，所以第一行 `packages/all/packages.adb` 任何设备通用；`mihomo-meta` 这类内核包按架构出包（`x86_64`、`aarch64_cortex-a53`、`arm_cortex-a7_neon-vfpv4`），必须再加一行指向你自己架构的 `packages.adb`，否则在软件包列表里看不到它。apk 与 ipk 两套索引里都有 `mihomo-meta`，老设备（opkg）走 `src/gz` 那条源即可。
 
 ## 更新机制
 
