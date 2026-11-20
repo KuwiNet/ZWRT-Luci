@@ -148,7 +148,9 @@ def main():
                 "-v", "%s:/work" % work,
                 "alpine:latest", "sh", "-c",
                 " && ".join([
-                    "apk add --no-cache --virtual .x apk-tools >/dev/null 2>&1 || true",
+                    # files are staged by the runner uid; normalize ownership to root
+                    # inside the container so mkpkg records root:root instead of nobody
+                    "chown -R 0:0 /work/root",
                     "apk mkpkg --compat 3.0.0_pre1 -F /work/root"
                     " -I name:%s -I version:%s" % (name, pkgver) +
                     " -I description:%s -I arch:%s" % (json.dumps(desc), arch) +
