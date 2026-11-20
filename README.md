@@ -16,8 +16,9 @@
 | `luci-i18n-5gmodem-zh-cn` | 5gmodem 简体中文语言包 |
 | `luci-i18n-5gmodem-zh-tw` | 5gmodem 繁体中文语言包 |
 | `luci-app-afrp` | AFRP NAT 穿透客户端管理 |
+| `mihomo-meta` | Mihomo（Meta 内核），按架构出包 |
 
-> 插件会持续增加。源内所有包均为 `all` 架构，兼容绝大多数 OpenWrt 设备。
+> 插件会持续增加。大部分包为 `all` 架构；`mihomo-meta` 是内核二进制，必须按设备架构提供，见下方 apk 源配置。
 
 ## 支持的架构
 
@@ -67,6 +68,8 @@ wget -O /etc/apk/keys/zwrt-feed.pem https://mirror.zwrt.cc/packages/zwrt-feed.pe
 ```bash
 mkdir -p /etc/apk/repositories.d
 echo "https://mirror.zwrt.cc/packages/all/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
+# 装 mihomo-meta 等按架构出包的插件，还需要再加一行（`<架构>` 换成 apk arch 的输出）
+echo "https://mirror.zwrt.cc/packages/<架构>/packages.adb" >> /etc/apk/repositories.d/customfeeds.list
 apk update
 ```
 
@@ -79,7 +82,7 @@ apk add luci-theme-zwrt luci-app-5gmodem luci-i18n-5gmodem-zh-cn luci-i18n-5gmod
 > 系统升级（sysupgrade）会清掉 `/etc/apk/keys` 里的自定义公钥，建议把它加入备份清单：
 > `echo /etc/apk/keys/zwrt-feed.pem >> /etc/sysupgrade.conf`
 
-源内所有包都是 `all` 架构，因此任何架构都只需要上面这一行 `packages/all/packages.adb`，不用按架构区分。
+源内 `luci-*` 包都是 `all` 架构，所以第一行 `packages/all/packages.adb` 任何设备通用；`mihomo-meta` 这类内核包按架构出包（`x86_64`、`aarch64_cortex-a53`、`arm_cortex-a7`、`arm_cortex-a7_neon-vfpv4`），必须再加一行指向你自己架构的 `packages.adb`，否则在软件包列表里看不到它。
 
 ## 更新机制
 
