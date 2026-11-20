@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
-"""Package upstream MetaCubeX/mihomo bare binaries into OpenWrt apk v3 packages.
+"""Package upstream MetaCubeX/mihomo bare binaries into OpenWrt packages.
 
-Upstream ships no .ipk/.apk assets, so we build the package ourselves:
+Upstream ships no .ipk/.apk assets, so we build them ourselves:
 download the official release binary for each OpenWrt arch, assemble a
-buildroot, and let `apk mkpkg` (apk-tools 3.x, inside an alpine container)
-produce a real v3 apk that the feed's `apk mkndx` step can index.
+buildroot, then produce
 
-Output: <out>/<arch>/mihomo-<ver>-r1.apk
+  * a real apk v3 package via `apk mkpkg` (apk-tools 3.x, alpine container)
+  * a classic opkg .ipk (ar container: debian-binary + control.tar.gz + data.tar.gz)
+
+and refresh the per-arch opkg ``Packages`` index so the new .ipk is listed
+(the apk index is rebuilt later by `apk mkndx` in the workflow).
+
+Output: <out>/<arch>/<name>-<ver>-r1.apk  and  .ipk
 """
 
 import argparse
 import gzip
+import hashlib
+import io
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import urllib.request
 
@@ -59,9 +67,141 @@ def gh_json(url, token):
 
 def download(url, dest):
     log("  downloading %s" % url)
-    with urllib.request.urlopen(url) as r, open(dest, "wb") as f:
-        shutil.copyfileobj(r, f)
+    with urllib.request.urlopen(url) as r:
+        with open(dest, "wb") as f:
+            shutil.copyfileobj(r, f)
     return os.path.getsize(dest)
+
+
+# ---------------------------------------------------------------- .ipk builder
+
+def _tar_gz(entries):
+    """entries: list of (name, bytes, mode). Deterministic tar.gz."""
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w:gz", compresslevel=9) as tar:
+        for name, data, mode in entries:
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            info.mode = mode
+            info.mtime = 0
+            info.uid = 0
+            info.gid = 0
+            info.uname = "root"
+            info.gname = "root"
+            tar.addfile(info, io.BytesIO(data))
+    return buf.getvalue()
+
+
+def _ar_member(name, data):
+    hdr = "{:<16}{:<12}{:<6}{:<6}{:<8}{:<10}`\n".format(
+        name + "/", "0", "0", "0", "100644", str(len(data))
+    )
+    pad = b"\n" if len(data) % 2 else b""
+    return hdr.encode("ascii") + data + pad
+
+
+def build_ipk(root, arch, name, pkgver, meta, out_path):
+    control_lines = [
+        "Package: " + name,
+        "Version: " + pkgver,
+        "Architecture: " + arch,
+        "Section: net",
+        "Category: Network",
+        "Title: " + meta["description"],
+        "Maintainer: " + meta["maintainer"],
+        "License: " + meta["license"],
+        "URL: " + meta["url"],
+    ]
+    if meta.get("depends"):
+        control_lines.append("Depends: " + ", ".join(meta["depends"]))
+    if meta.get("provides"):
+        control_lines.append("Provides: " + ", ".join(meta["provides"]))
+    if meta.get("replaces"):
+        control_lines.append("Replaces: " + ", ".join(meta["replaces"]))
+    if meta.get("conflicts"):
+        control_lines.append("Conflicts: " + ", ".join(meta["conflicts"]))
+
+    installed = 0
+    for dirpath, _dirs, files in os.walk(root):
+        for fn in files:
+            installed += os.path.getsize(os.path.join(dirpath, fn))
+    control_lines.append("Installed-Size: %d" % (installed // 1024))
+    control_lines.append("Description: " + meta["description"])
+    control = ("\n".join(control_lines) + "\n").encode("utf-8")
+
+    conffiles = ""
+    if meta.get("conf_files"):
+        conffiles = ("\n".join(meta["conf_files"]) + "\n").encode("utf-8")
+
+    control_entries = [("./control", control, 0o644)]
+    if conffiles:
+        control_entries.append(("./conffiles", conffiles, 0o644))
+    control_tgz = _tar_gz(control_entries)
+
+    data_entries = []
+    for dirpath, dirs, files in os.walk(root):
+        rel_dir = os.path.relpath(dirpath, root)
+        if rel_dir != ".":
+            data_entries.append(("./" + rel_dir.replace(os.sep, "/"), b"", 0o755))
+        for fn in sorted(files):
+            full = os.path.join(dirpath, fn)
+            rel = os.path.relpath(full, root).replace(os.sep, "/")
+            # derive the mode from the path instead of st_mode: on Windows
+            # os.stat().st_mode reports 0666 for everything
+            if rel.startswith("usr/bin/") or rel.startswith("etc/init.d/"):
+                mode = 0o755
+            else:
+                mode = 0o644
+            with open(full, "rb") as f:
+                data_entries.append(("./" + rel, f.read(), mode))
+    data_tgz = _tar_gz(data_entries)
+
+    debian_binary = b"2.0\n"
+    with open(out_path, "wb") as out:
+        out.write(b"!<arch>\n")
+        out.write(_ar_member("debian-binary", debian_binary))
+        out.write(_ar_member("control.tar.gz", control_tgz))
+        out.write(_ar_member("data.tar.gz", data_tgz))
+    return installed
+
+
+# ------------------------------------------------------------- opkg index patch
+
+def _file_digest(path, algo):
+    h = hashlib.new(algo)
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def update_opkg_index(arch_dir, name, block_fields):
+    """Rewrite <arch_dir>/Packages (+ .gz) keeping other blocks, replacing ours."""
+    path = os.path.join(arch_dir, "Packages")
+    old_blocks = []
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            raw = f.read()
+        for b in raw.split("\n\n"):
+            if b.strip():
+                old_blocks.append(b.strip())
+
+    kept = []
+    for b in old_blocks:
+        lines = b.split("\n")
+        if any(l.strip() == "Package: " + name for l in lines):
+            continue
+        if any(l.startswith("Package: ") and l.split(": ", 1)[1].strip() == name for l in lines):
+            continue
+        kept.append(b)
+
+    new_block = "\n".join(block_fields)
+    text = "\n\n".join(kept + [new_block]) + "\n"
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+    with open(path + ".gz", "wb") as f:
+        f.write(gzip.compress(text.encode("utf-8"), 9, mtime=0))
+    return len(kept) + 1
 
 
 def main():
@@ -95,6 +235,18 @@ def main():
     desc = cfg.get("description", "mihomo meta core")
     license_ = cfg.get("license", "GPL-3.0")
     url = cfg.get("url", "https://github.com/" + repo)
+    maintainer = cfg.get("maintainer", "ZWRT-Feed")
+    meta = {
+        "description": desc,
+        "maintainer": maintainer,
+        "license": license_,
+        "url": url,
+        "depends": depends,
+        "provides": cfg.get("provides"),
+        "replaces": cfg.get("replaces"),
+        "conflicts": cfg.get("conflicts"),
+        "conf_files": cfg.get("conf_files", ["/etc/config/mihomo"]),
+    }
 
     work = tempfile.mkdtemp(prefix="mihomo-pkg-")
     failed = []
@@ -142,8 +294,16 @@ def main():
                 f.write("Place your mihomo config.yaml in this directory.\n")
             os.chmod(os.path.join(root, "etc/mihomo/README"), 0o644)
 
-            out_apk = os.path.join(work, "out-%s.apk" % safe)
+            arch_dir = os.path.join(args.out, arch)
+            os.makedirs(arch_dir, exist_ok=True)
+            for stale in os.listdir(arch_dir):
+                if stale.startswith(name + "-") and stale.endswith((".apk", ".ipk")):
+                    os.remove(os.path.join(arch_dir, stale))
 
+            base = "%s-%s" % (name, pkgver)
+
+            # ---- apk v3
+            out_apk = os.path.join(work, "out-%s.apk" % safe)
             cmd = [
                 "docker", "run", "--rm",
                 "-v", "%s:/work" % work,
@@ -156,7 +316,7 @@ def main():
                     " -I name:%s -I version:%s" % (name, pkgver) +
                     " -I description:%s -I arch:%s" % (json.dumps(desc), arch) +
                     " -I license:%s -I origin:%s" % (license_, name) +
-                    " -I maintainer:%s -I url:%s" % (cfg.get("maintainer", "ZWRT"), url) +
+                    " -I maintainer:%s -I url:%s" % (maintainer, url) +
                     ' -I "depends:%s"' % " ".join(depends) +
                     (' -I "provides:%s"' % " ".join(cfg["provides"]) if cfg.get("provides") else "") +
                     (' -I "replaces:%s"' % " ".join(cfg["replaces"]) if cfg.get("replaces") else "") +
@@ -177,15 +337,54 @@ def main():
             if not os.path.exists(out_apk):
                 failed.append((arch, "apk not produced"))
                 continue
+            dest_apk = os.path.join(arch_dir, base + ".apk")
+            shutil.copy2(out_apk, dest_apk)
+            log("  -> %s (%d B)" % (dest_apk, os.path.getsize(dest_apk)))
 
-            arch_dir = os.path.join(args.out, arch)
-            os.makedirs(arch_dir, exist_ok=True)
-            for stale in os.listdir(arch_dir):
-                if stale.startswith(name + "-") and stale.endswith(".apk"):
-                    os.remove(os.path.join(arch_dir, stale))
-            dest = os.path.join(arch_dir, "%s-%s.apk" % (name, pkgver))
-            shutil.copy2(out_apk, dest)
-            log("  -> %s (%d B)" % (dest, os.path.getsize(dest)))
+            # ---- ipk (opkg)
+            dest_ipk = os.path.join(arch_dir, base + ".ipk")
+            try:
+                build_ipk(root, arch, name, pkgver, meta, dest_ipk)
+            except Exception as e:
+                log("  ipk build failed for %s: %r" % (arch, e))
+                failed.append((arch, "ipk: %r" % e))
+                continue
+            size = os.path.getsize(dest_ipk)
+            log("  -> %s (%d B)" % (dest_ipk, size))
+
+            # ---- refresh opkg index so the new .ipk is visible
+            block = [
+                "Package: " + name,
+                "Version: " + pkgver,
+                "Depends: " + ", ".join(depends),
+            ]
+            if cfg.get("provides"):
+                block.append("Provides: " + ", ".join(cfg["provides"]))
+            if cfg.get("replaces"):
+                block.append("Replaces: " + ", ".join(cfg["replaces"]))
+            if cfg.get("conflicts"):
+                block.append("Conflicts: " + ", ".join(cfg["conflicts"]))
+            inst = 0
+            for dirpath, _d, files in os.walk(root):
+                for fn in files:
+                    inst += os.path.getsize(os.path.join(dirpath, fn))
+            block += [
+                "Architecture: " + arch,
+                "Section: net",
+                "Category: Network",
+                "Title: " + desc,
+                "Maintainer: " + maintainer,
+                "License: " + license_,
+                "URL: " + url,
+                "Installed-Size: %d" % (inst // 1024),
+                "Filename: " + base + ".ipk",
+                "Size: %d" % size,
+                "MD5Sum: " + _file_digest(dest_ipk, "md5"),
+                "SHA256sum: " + _file_digest(dest_ipk, "sha256"),
+                "Description: " + desc,
+            ]
+            n = update_opkg_index(arch_dir, name, block)
+            log("  opkg index refreshed: %s/Packages (%d blocks)" % (arch, n))
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
