@@ -1,13 +1,14 @@
 {
   "enabled": true,
-  "name": "mihomo",
+  "name": "mihomo-meta",
+  "provides": ["mihomo"],
   "release_repo": "MetaCubeX/mihomo",
-  "description": "mihomo proxy core (tun capable)",
-  "license": "GPL-3.0",
+  "description": "A rule based proxy in Go. (mihomo meta core)",
+  "license": "GPL3.0+",
   "maintainer": "ZWRT-Feed",
   "url": "https://github.com/MetaCubeX/mihomo",
   "revision": 1,
-  "depends": ["ca-bundle", "kmod-tun"],
+  "depends": ["ca-bundle", "ip-full", "kmod-inet-diag", "kmod-tun"],
   "asset_patterns": {
     "x86_64": "mihomo-linux-amd64-compatible-v{v}.gz",
     "aarch64_cortex-a53": "mihomo-linux-arm64-v{v}.gz",
